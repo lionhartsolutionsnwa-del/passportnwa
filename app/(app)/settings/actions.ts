@@ -47,11 +47,19 @@ export async function saveProfileAction(formData: FormData) {
     avatar_url = pub.publicUrl;
   }
 
+  const phone = String(formData.get("phone") ?? "").trim() || null;
+  const email_marketing_consent = formData.get("email_marketing_consent") === "on";
+  const sms_marketing_consent   = formData.get("sms_marketing_consent") === "on" && !!phone;
+
   const row: Record<string, unknown> = {
     id: user.id,
     username,
     display_name,
     bio,
+    phone,
+    email_marketing_consent,
+    sms_marketing_consent,
+    consent_updated_at: new Date().toISOString(),
     favorite_restaurant_ids,
   };
   if (avatar_url) row.avatar_url = avatar_url;

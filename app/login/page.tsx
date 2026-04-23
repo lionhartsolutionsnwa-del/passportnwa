@@ -14,6 +14,9 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
   const [displayName, setDisplayName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [emailMarketing, setEmailMarketing] = useState(false);
+  const [smsMarketing, setSmsMarketing] = useState(false);
   const [status, setStatus] = useState<"idle" | "loading" | "ok" | "error">("idle");
   const [msg, setMsg] = useState("");
 
@@ -43,11 +46,23 @@ export default function LoginPage() {
       return;
     }
 
+    if (smsMarketing && !phone) {
+      setStatus("error");
+      setMsg("Add a phone number or uncheck SMS marketing consent.");
+      return;
+    }
+
     const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        data: { username, display_name: displayName || username },
+        data: {
+          username,
+          display_name: displayName || username,
+          phone: phone || null,
+          email_marketing_consent: emailMarketing,
+          sms_marketing_consent: smsMarketing,
+        },
         emailRedirectTo: `${window.location.origin}/auth/callback`,
       },
     });
@@ -144,6 +159,52 @@ export default function LoginPage() {
               className="input mt-1"
             />
           </div>
+
+          {mode === "signup" && (
+            <>
+              <div>
+                <label className="eyebrow">Phone (optional)</label>
+                <input
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="(479) 555-0100"
+                  className="input mt-1"
+                />
+              </div>
+
+              <div className="postcard p-3 flex flex-col gap-2">
+                <label className="flex items-start gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={emailMarketing}
+                    onChange={(e) => setEmailMarketing(e.target.checked)}
+                    className="mt-0.5"
+                  />
+                  <span className="text-xs font-serif text-[var(--pp-ink)]">
+                    Email me about new restaurants, perks, and Passport NWA news. Unsubscribe anytime.
+                  </span>
+                </label>
+                <label className="flex items-start gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={smsMarketing}
+                    onChange={(e) => setSmsMarketing(e.target.checked)}
+                    className="mt-0.5"
+                  />
+                  <span className="text-xs font-serif text-[var(--pp-ink)]">
+                    Text me deals and perks (msg & data rates apply; reply STOP to quit). Requires a phone number above.
+                  </span>
+                </label>
+              </div>
+
+              <p className="font-serif italic text-[10px] text-[var(--pp-ink-soft)]">
+                By creating an account you agree to our{" "}
+                <Link href="/terms" className="text-[var(--pp-burgundy)] underline">Terms</Link> and{" "}
+                <Link href="/privacy" className="text-[var(--pp-burgundy)] underline">Privacy Policy</Link>.
+              </p>
+            </>
+          )}
 
           <button
             disabled={status === "loading"}

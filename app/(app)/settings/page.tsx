@@ -11,7 +11,7 @@ export default async function SettingsPage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("username, display_name, bio, avatar_url, favorite_restaurant_ids")
+    .select("username, display_name, bio, avatar_url, phone, email_marketing_consent, sms_marketing_consent, favorite_restaurant_ids")
     .eq("id", user.id)
     .maybeSingle();
 
@@ -88,6 +88,46 @@ export default async function SettingsPage() {
             placeholder="A line about you"
             className="input mt-2 font-serif italic resize-none"
           />
+        </div>
+
+        <div>
+          <label className="eyebrow">Phone (optional)</label>
+          <input
+            name="phone"
+            type="tel"
+            defaultValue={profile?.phone ?? ""}
+            placeholder="(479) 555-0100"
+            className="input mt-2"
+          />
+        </div>
+
+        <div className="postcard p-4 flex flex-col gap-3">
+          <div className="eyebrow">Communications</div>
+          <label className="flex items-start gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              name="email_marketing_consent"
+              defaultChecked={!!profile?.email_marketing_consent}
+              className="mt-0.5"
+            />
+            <span className="font-serif text-sm">
+              Marketing emails — new restaurants, featured perks, platform news. Unsubscribe anytime.
+            </span>
+          </label>
+          <label className="flex items-start gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              name="sms_marketing_consent"
+              defaultChecked={!!profile?.sms_marketing_consent}
+              className="mt-0.5"
+            />
+            <span className="font-serif text-sm">
+              Marketing texts (msg & data rates apply; reply STOP to quit). Requires a phone number above.
+            </span>
+          </label>
+          <p className="font-mono text-[10px] text-[var(--pp-ink-soft)]">
+            Essential messages (account, receipts, redemptions, security) are always delivered.
+          </p>
         </div>
 
         <FavoritePicker

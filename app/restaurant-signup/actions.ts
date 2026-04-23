@@ -68,12 +68,18 @@ export async function submitRestaurantSignupAction(
   const userId = created.user.id;
 
   // 2) Ensure profile row
+  const emailMarketingConsent = formData.get("email_marketing_consent") === "on";
+  const smsMarketingConsent   = formData.get("sms_marketing_consent") === "on";
   await admin.from("profiles").upsert(
     {
       id: userId,
       username,
       display_name: fullName,
+      phone: restaurantPhone,
       is_restaurant_owner: true,
+      email_marketing_consent: emailMarketingConsent,
+      sms_marketing_consent: smsMarketingConsent && !!restaurantPhone,
+      consent_updated_at: new Date().toISOString(),
     },
     { onConflict: "id" },
   );

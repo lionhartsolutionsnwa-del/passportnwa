@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import { searchRestaurantsAction, submitRestaurantSignupAction } from "./actions";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 
 type Restaurant = { id: string; name: string; city: string };
 
@@ -179,6 +180,27 @@ export default function RestaurantSignupPage() {
               />
             </div>
           </section>
+
+          <div className="postcard p-3 flex flex-col gap-2">
+            <label className="flex items-start gap-2 cursor-pointer">
+              <input type="checkbox" name="email_marketing_consent" className="mt-0.5" />
+              <span className="text-xs font-serif">
+                Email me platform news, best-practice tips, and marketing updates from Passport NWA.
+              </span>
+            </label>
+            <label className="flex items-start gap-2 cursor-pointer">
+              <input type="checkbox" name="sms_marketing_consent" className="mt-0.5" />
+              <span className="text-xs font-serif">
+                Text me for urgent platform alerts (msg & data rates apply; reply STOP to quit).
+              </span>
+            </label>
+          </div>
+
+          <p className="font-serif italic text-[10px] text-[var(--pp-ink-soft)]">
+            By submitting this application you agree to our{" "}
+            <Link href="/terms" className="text-[var(--pp-burgundy)] underline">Terms</Link> and{" "}
+            <Link href="/privacy" className="text-[var(--pp-burgundy)] underline">Privacy Policy</Link>.
+          </p>
 
           <button
             disabled={submitting || (mode === "existing" && !pickedRestaurant)}
