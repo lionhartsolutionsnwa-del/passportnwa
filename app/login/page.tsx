@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
@@ -169,6 +170,16 @@ export default function LoginPage() {
         <p className="text-center font-serif italic text-[var(--pp-ink-soft)] text-sm mt-8">
           "All who wander are not lost — most are just hungry."
         </p>
+
+        <div className="text-center mt-8">
+          <div className="eyebrow">For Restaurants</div>
+          <Link
+            href="/restaurant-signup"
+            className="mt-3 inline-block btn-ghost"
+          >
+            Register your restaurant →
+          </Link>
+        </div>
       </div>
     </main>
   );

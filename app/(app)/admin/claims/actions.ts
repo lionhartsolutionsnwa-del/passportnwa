@@ -37,6 +37,8 @@ export async function decideClaimAction(claimId: string, decision: "approved" | 
       approved_by: user.id,
     });
     await admin.from("profiles").update({ is_restaurant_owner: true }).eq("id", claim.user_id);
+    // Activate the restaurant if it was created via the owner signup flow as inactive.
+    await admin.from("restaurants").update({ is_active: true }).eq("id", claim.restaurant_id);
   }
 
   revalidatePath("/admin/claims");

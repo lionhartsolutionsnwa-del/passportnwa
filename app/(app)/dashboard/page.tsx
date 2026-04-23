@@ -14,7 +14,49 @@ export default async function DashboardPage() {
     .select("restaurant_id, restaurants(id, slug, name, city, check_in_token, cover_image_url)")
     .eq("user_id", user.id);
 
-  if (!owned || owned.length === 0) {
+  const hasApprovedOwnership = (owned?.length ?? 0) > 0;
+
+  // Pending claims (not yet approved)
+  const { data: pendingClaims } = !hasApprovedOwnership
+    ? await supabase
+        .from("restaurant_claims")
+        .select("id, status, created_at, restaurants(name, city)")
+        .eq("user_id", user.id)
+        .eq("status", "pending")
+        .order("created_at", { ascending: false })
+    : { data: [] };
+
+  // Pending state — no approvals yet
+  if (!hasApprovedOwnership) {
+    if (pendingClaims && pendingClaims.length > 0) {
+      return (
+        <div className="flex flex-col gap-6">
+          <header>
+            <div className="eyebrow">Concierge</div>
+            <h1 className="headline text-3xl mt-2">Under review</h1>
+          </header>
+
+          <div className="postcard p-6 text-center">
+            <div className="eyebrow text-[var(--pp-burgundy)]">Verification pending</div>
+            <p className="font-serif italic text-[var(--pp-ink-soft)] mt-3">
+              We're verifying your business. This usually takes <strong>1–2 business days</strong>. Once approved, you'll unlock QR codes, rewards, receipt review, and redemptions.
+            </p>
+            <div className="fleuron mt-4">⌑</div>
+            <ul className="flex flex-col gap-2 mt-4 text-left">
+              {pendingClaims.map((c: any) => (
+                <li key={c.id} className="border border-[var(--pp-cream-dark)] rounded p-3">
+                  <div className="font-serif">{c.restaurants?.name}</div>
+                  <div className="font-mono text-[10px] tracking-[0.15em] uppercase text-[var(--pp-ink-soft)] mt-0.5">
+                    {c.restaurants?.city} · submitted {new Date(c.created_at).toLocaleDateString()}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="flex flex-col gap-4">
         <header>
@@ -33,7 +75,8 @@ export default async function DashboardPage() {
     );
   }
 
-  const restaurantIds = owned.map((o: any) => o.restaurant_id);
+  // APPROVED — full dashboard below
+  const restaurantIds = owned!.map((o: any) => o.restaurant_id);
 
   const { count: totalCheckins } = await supabase
     .from("checkins")
@@ -52,7 +95,6 @@ export default async function DashboardPage() {
     .order("created_at", { ascending: false })
     .limit(10);
 
-  // Top customers
   const { data: allCheckins } = await supabase
     .from("checkins")
     .select("user_id, profiles(username, display_name)")
@@ -71,13 +113,11 @@ export default async function DashboardPage() {
   }
   const topCustomers = [...counts.values()].sort((a, b) => b.count - a.count).slice(0, 5);
 
-  // Determine origin for building QR codes
   const h = await headers();
   const host = h.get("x-forwarded-host") ?? h.get("host") ?? "localhost:3000";
   const proto = h.get("x-forwarded-proto") ?? (host.startsWith("localhost") ? "http" : "https");
   const origin = `${proto}://${host}`;
 
-  // Precompute QR codes
   const qrByRestaurant: Record<string, { url: string; png: string }> = {};
   for (const o of owned as any[]) {
     const r = o.restaurants;
@@ -101,22 +141,20 @@ export default async function DashboardPage() {
           </div>
         </div>
         <p className="mt-2 font-serif italic text-[var(--pp-ink-soft)]">
-          Managing {owned.map((o: any) => o.restaurants?.name).join(" · ")}
+          Managing {owned!.map((o: any) => o.restaurants?.name).join(" · ")}
         </p>
       </header>
 
-      {/* Stats */}
       <div className="grid grid-cols-3 gap-3">
         <Seal label="Stamps" value={totalCheckins ?? 0} />
         <Seal label="Field notes" value={postCount ?? 0} />
-        <Seal label="Destinations" value={owned.length} />
+        <Seal label="Destinations" value={owned!.length} />
       </div>
 
-      {/* QR codes */}
       <section>
         <h2 className="section-heading">Your Stamping Stations</h2>
         <p className="mt-2 text-sm text-[var(--pp-ink-soft)] font-serif italic">
-          Print this QR code and place it on your tables or at the register. Only travelers who scan it can stamp their passports.
+          Print this QR code and place it on your tables. Only travelers who scan it can stamp their passports.
         </p>
         <div className="flex flex-col gap-4 mt-4">
           {(owned as any[]).map((o) => {
@@ -154,7 +192,6 @@ export default async function DashboardPage() {
         </div>
       </section>
 
-      {/* Top customers */}
       <section>
         <h2 className="section-heading">Most Loyal Travelers</h2>
         {topCustomers.length === 0 ? (
@@ -176,7 +213,6 @@ export default async function DashboardPage() {
         )}
       </section>
 
-      {/* Recent posts */}
       <section>
         <h2 className="section-heading">Recent Field Notes</h2>
         {!recentPosts?.length ? (
@@ -187,7 +223,7 @@ export default async function DashboardPage() {
               <li key={p.id} className="postcard p-4">
                 <div className="flex justify-between items-start gap-3">
                   <div className="min-w-0">
-                    <Link href={`/u/${p.profiles?.username}`} className="font-serif text-[var(--pp-ink)] hover:text-[var(--pp-burgundy)]">
+                    <Link href={`/u/${p.profiles?.username}`} className="font-serif text-[var(--pp-ink)]">
                       @{p.profiles?.username}
                     </Link>
                     <div className="font-mono text-[10px] tracking-[0.15em] uppercase text-[var(--pp-ink-soft)] mt-0.5">
