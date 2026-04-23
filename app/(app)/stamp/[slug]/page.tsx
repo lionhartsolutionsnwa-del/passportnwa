@@ -88,22 +88,29 @@ export default async function StampPage({
         </div>
       </div>
 
-      {!alreadyStamped && (
-        <div className="postage">+10 ★ points</div>
-      )}
       {alreadyStamped && (
         <p className="font-serif italic text-[var(--pp-ink-soft)] max-w-xs">
-          You've already stamped this spot within the last hour — one stamp per visit.
+          You've already stamped this spot within the last hour.
         </p>
       )}
 
       <div className="fleuron w-full max-w-xs">⌑</div>
 
+      <div className="postcard p-4 max-w-xs w-full text-center">
+        <div className="eyebrow">Earn points</div>
+        <p className="font-serif italic text-[var(--pp-ink-soft)] text-sm mt-2">
+          Stamps are free. Upload your receipt to turn this visit into redeemable points.
+        </p>
+      </div>
+
       <div className="flex flex-col gap-2 w-full max-w-xs">
-        <Link href={`/post/new?r=${restaurant.slug}&checkedIn=1`} className="btn-primary py-4">
-          Leave a field note →
+        <Link href={`/receipt/new?r=${restaurant.slug}`} className="btn-primary py-4">
+          Upload receipt for points →
         </Link>
-        <Link href={`/r/${restaurant.slug}`} className="btn-ghost">
+        <Link href={`/post/new?r=${restaurant.slug}&checkedIn=1`} className="btn-ghost">
+          Leave a field note
+        </Link>
+        <Link href={`/r/${restaurant.slug}`} className="text-center font-mono text-[10px] tracking-[0.2em] uppercase text-[var(--pp-ink-soft)] hover:text-[var(--pp-burgundy)] mt-1">
           View destination
         </Link>
       </div>

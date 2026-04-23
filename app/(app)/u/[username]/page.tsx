@@ -3,10 +3,10 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { followAction, unfollowAction } from "./actions";
 
-function tier(points: number) {
-  if (points >= 1000) return { name: "NWA Legend", code: "L-3" };
-  if (points >= 500)  return { name: "Local",      code: "L-2" };
-  if (points >= 100)  return { name: "Regular",    code: "L-1" };
+function tier(spotsVisited: number) {
+  if (spotsVisited >= 25) return { name: "NWA Legend", code: "L-3" };
+  if (spotsVisited >= 10) return { name: "Local",      code: "L-2" };
+  if (spotsVisited >= 3)  return { name: "Regular",    code: "L-1" };
   return { name: "Explorer", code: "L-0" };
 }
 
@@ -95,7 +95,7 @@ export default async function ProfilePage({
     .order("created_at", { ascending: false })
     .limit(24);
 
-  const t = tier(profile.points);
+  const t = tier(uniqueRestaurants);
   const passportNo = profile.id.replace(/-/g, "").slice(0, 9).toUpperCase();
 
   return (

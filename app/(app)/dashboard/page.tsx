@@ -89,8 +89,13 @@ export default async function DashboardPage() {
   return (
     <div className="flex flex-col gap-8">
       <header>
-        <div className="eyebrow">Concierge</div>
-        <h1 className="headline text-3xl mt-2">Restaurant dashboard</h1>
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="eyebrow">Concierge</div>
+            <h1 className="headline text-3xl mt-2">Restaurant dashboard</h1>
+          </div>
+          <Link href="/dashboard/receipts" className="btn-ghost">Review receipts</Link>
+        </div>
         <p className="mt-2 font-serif italic text-[var(--pp-ink-soft)]">
           Managing {owned.map((o: any) => o.restaurants?.name).join(" · ")}
         </p>
