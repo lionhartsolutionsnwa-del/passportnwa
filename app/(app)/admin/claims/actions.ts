@@ -19,58 +19,59 @@ export async function decideClaimAction(claimId: string, decision: "approved" | 
   if (!me?.is_admin) throw new Error("Admin only");
 
   const admin = createAdminClient();
-  const { data: claim } = await admin
+
+  const { data: claim, error: claimErr } = await admin
     .from("restaurant_claims")
     .select("user_id, restaurant_id")
     .eq("id", claimId)
     .single();
-  if (!claim) throw new Error("Claim not found");
+  if (claimErr || !claim) throw new Error(`Claim not found: ${claimErr?.message ?? "unknown"}`);
 
-  await admin
+  const { error: updErr } = await admin
     .from("restaurant_claims")
     .update({ status: decision, decided_at: new Date().toISOString(), decided_by: user.id })
     .eq("id", claimId);
+  if (updErr) throw new Error(`Update failed: ${updErr.message}`);
 
   if (decision === "approved") {
-    await admin.from("restaurant_owners").upsert({
+    const { error: ownErr } = await admin.from("restaurant_owners").upsert({
       user_id: claim.user_id,
       restaurant_id: claim.restaurant_id,
       approved_by: user.id,
     });
+    if (ownErr) throw new Error(`Grant ownership failed: ${ownErr.message}`);
+
     await admin.from("profiles").update({ is_restaurant_owner: true }).eq("id", claim.user_id);
     await admin.from("restaurants").update({ is_active: true }).eq("id", claim.restaurant_id);
+  }
 
-    // Notify applicant
-    const { data: authUser } = await admin.auth.admin.getUserById(claim.user_id);
-    const email = authUser?.user?.email;
-    const { data: rest } = await admin.from("restaurants").select("name").eq("id", claim.restaurant_id).single();
-    if (email) {
-      await sendEmail({
-        to: email,
-        subject: `You're approved — ${rest?.name ?? "Passport NWA"}`,
-        html: `
-          <p>Good news — <strong>${rest?.name ?? "your restaurant"}</strong> is now live on Passport NWA, and you have full Concierge access.</p>
-          <p>Sign in at <a href="https://www.passportnwa.com/dashboard">passportnwa.com/dashboard</a> to:</p>
-          <ul>
-            <li>Download your QR code for the table</li>
-            <li>Create rewards travelers can redeem with points</li>
-            <li>Review incoming receipts and fulfill redemptions</li>
-          </ul>
-          <p>Welcome aboard.<br/>— Passport NWA</p>
-        `,
-      });
-    }
-  } else {
+  // Email notification — never block the approve/reject on a flaky email provider.
+  try {
     const { data: authUser } = await admin.auth.admin.getUserById(claim.user_id);
     const email = authUser?.user?.email;
     if (email) {
-      await sendEmail({
-        to: email,
-        subject: "Your Passport NWA application",
-        html: `<p>Thanks for applying. We weren't able to verify your restaurant at this time. If you think this was a mistake or want to reapply with additional documentation, reply to this email.</p><p>— Passport NWA</p>`,
-      });
+      if (decision === "approved") {
+        const { data: rest } = await admin.from("restaurants").select("name").eq("id", claim.restaurant_id).single();
+        await sendEmail({
+          to: email,
+          subject: `You're approved — ${rest?.name ?? "Passport NWA"}`,
+          html: `<p>Good news — <strong>${rest?.name ?? "your restaurant"}</strong> is now live on Passport NWA, and you have full Concierge access.</p>
+                 <p>Sign in at <a href="https://www.passportnwa.com/dashboard">passportnwa.com/dashboard</a> to download your QR code, create rewards, review receipts, and fulfill redemptions.</p>
+                 <p>Welcome aboard.<br/>— Passport NWA</p>`,
+        });
+      } else {
+        await sendEmail({
+          to: email,
+          subject: "Your Passport NWA application",
+          html: `<p>Thanks for applying. We weren't able to verify your restaurant at this time. Reply to this email if you'd like to reapply with additional documentation.</p><p>— Passport NWA</p>`,
+        });
+      }
     }
+  } catch (e) {
+    console.error("[claim-email] failed:", e);
   }
 
   revalidatePath("/admin/claims");
+  revalidatePath("/admin");
+  redirect("/admin/claims");
 }

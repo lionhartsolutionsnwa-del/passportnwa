@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { followAction, unfollowAction } from "./actions";
+import { addCompanionAction, removeCompanionAction } from "./actions";
 
 function tier(spotsVisited: number) {
   if (spotsVisited >= 100) return { name: "NWA Legend", code: "L-3" };
@@ -15,7 +15,6 @@ function fmtIssued(iso: string) {
 }
 
 function tilt(seed: string) {
-  // Deterministic tilt based on id, range -8 to +8 degrees
   let h = 0;
   for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) | 0;
   return (h % 17) - 8;
@@ -31,7 +30,7 @@ export default async function ProfilePage({
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("id, username, display_name, bio, avatar_url, points, followers_count, following_count, favorite_restaurant_ids, created_at")
+    .select("id, username, display_name, bio, avatar_url, points, favorite_restaurant_ids, created_at")
     .eq("username", username)
     .maybeSingle();
 
@@ -40,16 +39,18 @@ export default async function ProfilePage({
   const { data: { user } } = await supabase.auth.getUser();
   const isMe = user?.id === profile.id;
 
-  let isFollowing = false;
+  // Mutual follow state: do I follow them? do they follow me?
+  let iFollowThem = false;
+  let theyFollowMe = false;
   if (user && !isMe) {
-    const { data } = await supabase
-      .from("follows")
-      .select("follower_id")
-      .eq("follower_id", user.id)
-      .eq("followee_id", profile.id)
-      .maybeSingle();
-    isFollowing = !!data;
+    const [{ data: a }, { data: b }] = await Promise.all([
+      supabase.from("follows").select("follower_id").eq("follower_id", user.id).eq("followee_id", profile.id).maybeSingle(),
+      supabase.from("follows").select("follower_id").eq("follower_id", profile.id).eq("followee_id", user.id).maybeSingle(),
+    ]);
+    iFollowThem = !!a;
+    theyFollowMe = !!b;
   }
+  const areCompanions = iFollowThem && theyFollowMe;
 
   const { data: stamps } = await supabase
     .from("checkins")
@@ -61,25 +62,25 @@ export default async function ProfilePage({
     (stamps ?? []).map((s: any) => s.restaurants?.slug).filter(Boolean),
   ).size;
 
-  // Mutual-follow friends
+  // Companions = mutual followers of profile
   const { data: theyFollow } = await supabase
     .from("follows")
     .select("followee_id")
     .eq("follower_id", profile.id);
   const theyFollowIds = (theyFollow ?? []).map((r) => r.followee_id);
-  let friends: { username: string; display_name: string | null; avatar_url: string | null }[] = [];
-  if (theyFollowIds.length) {
+  let companions: { username: string; display_name: string | null; avatar_url: string | null }[] = [];
+  if (theyFollowIds.length > 0) {
     const { data: mutual } = await supabase
       .from("follows")
       .select("follower_id, profiles!follows_follower_id_fkey(username, display_name, avatar_url)")
       .eq("followee_id", profile.id)
       .in("follower_id", theyFollowIds);
-    friends = (mutual ?? []).map((m: any) => m.profiles).filter(Boolean);
+    companions = (mutual ?? []).map((m: any) => m.profiles).filter(Boolean);
   }
 
   const favIds = (profile.favorite_restaurant_ids ?? []) as string[];
   let favorites: { id: string; slug: string; name: string; city: string; cover_image_url: string | null }[] = [];
-  if (favIds.length) {
+  if (favIds.length > 0) {
     const { data: favs } = await supabase
       .from("restaurants")
       .select("id, slug, name, city, cover_image_url")
@@ -103,12 +104,8 @@ export default async function ProfilePage({
       {/* COVER */}
       <section className="passport-cover px-6 pt-7 pb-10 mx-4 mt-2 rounded-2xl">
         <div className="flex justify-between items-start">
-          <div className="text-[10px] tracking-[0.4em] font-serif foil">
-            PASSPORT NWA
-          </div>
-          <div className="text-[10px] tracking-[0.3em] font-mono text-[var(--pp-cream)]/60">
-            NORTHWEST ARKANSAS · USA
-          </div>
+          <div className="text-[10px] tracking-[0.4em] font-serif foil">PASSPORT NWA</div>
+          <div className="text-[10px] tracking-[0.3em] font-mono text-[var(--pp-cream)]/60">NORTHWEST ARKANSAS · USA</div>
         </div>
 
         <div className="mt-6 flex items-center gap-5">
@@ -122,9 +119,7 @@ export default async function ProfilePage({
           </div>
           <div className="flex-1 min-w-0">
             <div className="text-[10px] tracking-[0.3em] text-[var(--pp-gold)]/80 font-mono">SURNAME / GIVEN NAMES</div>
-            <div className="font-serif text-2xl leading-tight foil truncate">
-              {profile.display_name ?? profile.username}
-            </div>
+            <div className="font-serif text-2xl leading-tight foil truncate">{profile.display_name ?? profile.username}</div>
             <div className="mt-3 grid grid-cols-2 gap-3 text-[10px]">
               <Field label="Passport No." value={passportNo} />
               <Field label="Issued" value={fmtIssued(profile.created_at)} />
@@ -145,57 +140,61 @@ export default async function ProfilePage({
       <div className="px-6 mt-5 flex justify-end gap-2">
         {isMe ? (
           <>
-            <Link
-              href="/settings"
-              className="text-xs px-3 py-2 rounded-md border border-[var(--pp-burgundy)]/30 text-[var(--pp-burgundy)] hover:bg-[var(--pp-burgundy)]/5 font-mono tracking-widest uppercase"
-            >
+            <Link href="/settings" className="text-xs px-3 py-2 rounded-md border border-[var(--pp-burgundy)]/30 text-[var(--pp-burgundy)] font-mono tracking-widest uppercase">
               Edit
             </Link>
+            <Link href="/companions" className="text-xs px-3 py-2 rounded-md border border-[var(--pp-burgundy)]/30 text-[var(--pp-burgundy)] font-mono tracking-widest uppercase">
+              Find companions
+            </Link>
             <form action="/auth/signout" method="POST">
-              <button className="text-xs px-3 py-2 rounded-md border border-[var(--pp-burgundy)]/30 text-[var(--pp-burgundy)] hover:bg-[var(--pp-burgundy)]/5 font-mono tracking-widest uppercase">
+              <button className="text-xs px-3 py-2 rounded-md border border-[var(--pp-burgundy)]/30 text-[var(--pp-burgundy)] font-mono tracking-widest uppercase">
                 Sign out
               </button>
             </form>
           </>
-        ) : isFollowing ? (
-          <form action={unfollowAction.bind(null, profile.id, profile.username)}>
+        ) : areCompanions ? (
+          <form action={removeCompanionAction.bind(null, profile.id, profile.username)}>
+            <button className="text-xs px-4 py-2 rounded-md border border-[var(--pp-burgundy)] text-[var(--pp-burgundy)] font-mono tracking-widest uppercase">
+              Companion ✓
+            </button>
+          </form>
+        ) : iFollowThem ? (
+          <form action={removeCompanionAction.bind(null, profile.id, profile.username)}>
             <button className="text-xs px-4 py-2 rounded-md border border-[var(--pp-burgundy)]/40 text-[var(--pp-burgundy)] font-mono tracking-widest uppercase">
-              Following
+              Invitation sent
+            </button>
+          </form>
+        ) : theyFollowMe ? (
+          <form action={addCompanionAction.bind(null, profile.id, profile.username)}>
+            <button className="text-xs px-4 py-2 rounded-md bg-[var(--pp-gold)] text-[var(--pp-ink)] font-mono tracking-widest uppercase">
+              Add back
             </button>
           </form>
         ) : (
-          <form action={followAction.bind(null, profile.id, profile.username)}>
+          <form action={addCompanionAction.bind(null, profile.id, profile.username)}>
             <button className="text-xs px-4 py-2 rounded-md bg-[var(--pp-burgundy)] text-[var(--pp-cream)] font-mono tracking-widest uppercase">
-              Follow
+              Add companion
             </button>
           </form>
         )}
       </div>
 
-      {/* BIO */}
       {profile.bio && (
-        <p className="mt-4 mx-6 font-serif italic text-[var(--pp-ink)]/80 text-center">
-          "{profile.bio}"
-        </p>
+        <p className="mt-4 mx-6 font-serif italic text-[var(--pp-ink)]/80 text-center">"{profile.bio}"</p>
       )}
 
-      {/* STATS — embossed seals */}
-      <div className="mx-6 mt-6 grid grid-cols-3 gap-3">
-        <Seal label="Points"  value={profile.points} />
-        <Seal label="Stamps"  value={stamps?.length ?? 0} />
-        <Seal label="Spots"   value={uniqueRestaurants} />
+      <div className="mx-6 mt-6 grid grid-cols-4 gap-3">
+        <Seal label="Points"     value={profile.points} />
+        <Seal label="Stamps"     value={stamps?.length ?? 0} />
+        <Seal label="Spots"      value={uniqueRestaurants} />
+        <Seal label="Companions" value={companions.length} />
       </div>
 
-      {/* FAVORITES */}
       {favorites.length > 0 && (
         <Section title="Top Destinations">
           <div className="grid grid-cols-3 gap-3 mt-3">
             {favorites.map((f, i) => (
-              <Link
-                key={f.id}
-                href={`/r/${f.slug}`}
-                className="relative rounded-lg overflow-hidden aspect-square border border-[var(--pp-burgundy)]/20 shadow-[0_2px_4px_rgba(91,31,41,0.1)]"
-              >
+              <Link key={f.id} href={`/r/${f.slug}`} className="relative rounded-lg overflow-hidden aspect-square border border-[var(--pp-burgundy)]/20 shadow-[0_2px_4px_rgba(91,31,41,0.1)]">
                 {f.cover_image_url ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={f.cover_image_url} alt="" className="size-full object-cover" />
@@ -212,15 +211,14 @@ export default async function ProfilePage({
         </Section>
       )}
 
-      {/* FRIENDS */}
-      <Section title={`Companions · ${friends.length}`}>
-        {friends.length === 0 ? (
+      <Section title={`Companions · ${companions.length}`}>
+        {companions.length === 0 ? (
           <p className="font-serif italic text-[var(--pp-ink)]/50 mt-3 text-sm">
-            No companions yet. Friendships form when two travelers follow each other.
+            No companions yet. Companions form when two travelers add each other.
           </p>
         ) : (
           <div className="flex gap-4 overflow-x-auto -mx-6 px-6 mt-3 scrollbar-none">
-            {friends.map((f) => (
+            {companions.map((f) => (
               <Link key={f.username} href={`/u/${f.username}`} className="flex flex-col items-center gap-1.5 shrink-0 w-16">
                 <div className="size-14 rounded-full overflow-hidden bg-[var(--pp-burgundy)]/10 ring-1 ring-[var(--pp-burgundy)]/20 flex items-center justify-center font-serif text-lg text-[var(--pp-burgundy)]">
                   {f.avatar_url ? (
@@ -237,7 +235,6 @@ export default async function ProfilePage({
         )}
       </Section>
 
-      {/* STAMPS */}
       <Section title="Visa Stamps">
         {!stamps?.length ? (
           <p className="font-serif italic text-[var(--pp-ink)]/50 mt-3 text-sm">
@@ -246,13 +243,7 @@ export default async function ProfilePage({
         ) : (
           <div className="mt-4 flex flex-wrap gap-3 justify-start">
             {stamps.map((s: any) => (
-              <Link
-                key={s.id}
-                href={`/r/${s.restaurants?.slug}`}
-                className="stamp"
-                style={{ transform: `rotate(${tilt(s.id)}deg)` }}
-                title={`${s.restaurants?.name} · ${new Date(s.created_at).toLocaleDateString()}`}
-              >
+              <Link key={s.id} href={`/r/${s.restaurants?.slug}`} className="stamp" style={{ transform: `rotate(${tilt(s.id)}deg)` }} title={`${s.restaurants?.name} · ${new Date(s.created_at).toLocaleDateString()}`}>
                 <span className="stamp-name">{s.restaurants?.name}</span>
                 <span className="stamp-date">
                   {new Date(s.created_at).toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "2-digit" })}
@@ -263,18 +254,13 @@ export default async function ProfilePage({
         )}
       </Section>
 
-      {/* POSTS */}
       <Section title="Field Notes">
         {!posts?.length ? (
           <p className="font-serif italic text-[var(--pp-ink)]/50 mt-3 text-sm">No entries yet.</p>
         ) : (
           <div className="grid grid-cols-3 gap-1 mt-3">
             {posts.map((p: any) => (
-              <Link
-                key={p.id}
-                href={`/r/${p.restaurants?.slug ?? ""}`}
-                className="aspect-square overflow-hidden border border-[var(--pp-burgundy)]/15 bg-[var(--pp-cream-dark)]"
-              >
+              <Link key={p.id} href={`/r/${p.restaurants?.slug ?? ""}`} className="aspect-square overflow-hidden border border-[var(--pp-burgundy)]/15 bg-[var(--pp-cream-dark)]">
                 {p.photo_url ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={p.photo_url} alt="" className="size-full object-cover" />
@@ -303,8 +289,8 @@ function Field({ label, value }: { label: string; value: string }) {
 
 function Seal({ label, value }: { label: string; value: number }) {
   return (
-    <div className="text-center py-3 px-2 border border-[var(--pp-burgundy)]/25 rounded-lg bg-white/30 backdrop-blur-sm shadow-inner">
-      <div className="font-serif text-2xl text-[var(--pp-burgundy)] font-semibold">{value}</div>
+    <div className="text-center py-2 px-2 border border-[var(--pp-burgundy)]/25 rounded-lg bg-white/30 backdrop-blur-sm shadow-inner">
+      <div className="font-serif text-xl text-[var(--pp-burgundy)] font-semibold">{value}</div>
       <div className="font-mono text-[9px] tracking-[0.3em] uppercase text-[var(--pp-burgundy)]/70 mt-0.5">{label}</div>
     </div>
   );

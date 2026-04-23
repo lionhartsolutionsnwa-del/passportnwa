@@ -17,7 +17,7 @@ export default async function FeedPage({
   searchParams: Promise<{ view?: string }>;
 }) {
   const { view } = await searchParams;
-  const tab: "all" | "following" = view === "following" ? "following" : "all";
+  const tab: "all" | "companions" = view === "companions" ? "companions" : "all";
 
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -30,14 +30,16 @@ export default async function FeedPage({
     .order("created_at", { ascending: false })
     .limit(50);
 
-  if (tab === "following" && user) {
-    const { data: follows } = await supabase
-      .from("follows")
-      .select("followee_id")
-      .eq("follower_id", user.id);
-    const ids = (follows ?? []).map((f) => f.followee_id);
-    if (ids.length === 0) return <EmptyFollowing />;
-    query = query.in("user_id", ids);
+  if (tab === "companions" && user) {
+    // Companions = mutual follows
+    const [{ data: iFollow }, { data: followMe }] = await Promise.all([
+      supabase.from("follows").select("followee_id").eq("follower_id", user.id),
+      supabase.from("follows").select("follower_id").eq("followee_id", user.id),
+    ]);
+    const iFollowSet = new Set((iFollow ?? []).map((f) => f.followee_id));
+    const companionIds = (followMe ?? []).map((f) => f.follower_id).filter((id) => iFollowSet.has(id));
+    if (companionIds.length === 0) return <EmptyCompanions />;
+    query = query.in("user_id", companionIds);
   }
 
   const { data } = await query;
@@ -111,10 +113,10 @@ export default async function FeedPage({
       <div className="flex items-center justify-between">
         <div className="flex gap-1">
           <TabLink active={tab === "all"} href="/">All travelers</TabLink>
-          <TabLink active={tab === "following"} href="/?view=following">Following</TabLink>
+          <TabLink active={tab === "companions"} href="/?view=companions">Companions</TabLink>
         </div>
-        <Link href="/restaurants" className="btn-ghost text-[10px]">
-          Check in
+        <Link href="/companions" className="btn-ghost text-[10px]">
+          Find companions
         </Link>
       </div>
 
@@ -168,7 +170,7 @@ export default async function FeedPage({
           )}
           {p.post_tags && p.post_tags.length > 0 && (
             <div className="px-5 pb-4 font-mono text-[10px] tracking-[0.15em] uppercase text-[var(--pp-ink-soft)]">
-              traveling with{" "}
+              with{" "}
               {p.post_tags
                 .map((t, i) =>
                   t.profiles ? (
@@ -202,18 +204,18 @@ function TabLink({ active, href, children }: { active: boolean; href: string; ch
   );
 }
 
-function EmptyFollowing() {
+function EmptyCompanions() {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex gap-1">
         <TabLink active={false} href="/">All travelers</TabLink>
-        <TabLink active={true} href="/?view=following">Following</TabLink>
+        <TabLink active={true} href="/?view=companions">Companions</TabLink>
       </div>
       <div className="postcard p-10 text-center">
         <p className="font-serif italic text-[var(--pp-ink-soft)] text-lg">
-          "Follow other travelers to see their journals here."
+          "No companions yet. Add travelers by exact username to see their journals here."
         </p>
-        <Link href="/" className="btn-ghost mt-6">All travelers</Link>
+        <Link href="/companions" className="btn-primary mt-6">Find companions</Link>
       </div>
     </div>
   );
