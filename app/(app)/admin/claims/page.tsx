@@ -1,12 +1,10 @@
-import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { decideClaimAction } from "./actions";
 
 export default async function ClaimsPage() {
-  const supabase = await createClient();
   const admin = createAdminClient();
 
-  const { data: claims } = await supabase
+  const { data: claims } = await admin
     .from("restaurant_claims")
     .select(
       "id, status, role_at_restaurant, contact_phone, message, owner_full_name, business_legal_name, ein, verification_doc_path, created_at, profiles(username, display_name), restaurants(id, name, city, is_active)",
