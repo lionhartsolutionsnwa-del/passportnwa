@@ -4,51 +4,90 @@ import { decideClaimAction } from "./actions";
 export default async function ClaimsPage() {
   const admin = createAdminClient();
 
-  const { data: claims } = await admin
+  // 1) Fetch claims (no joins)
+  const { data: claimsRaw, error } = await admin
     .from("restaurant_claims")
-    .select(
-      "id, status, role_at_restaurant, contact_phone, message, owner_full_name, business_legal_name, ein, verification_doc_path, created_at, profiles(username, display_name), restaurants(id, name, city, is_active)",
-    )
+    .select("id, status, role_at_restaurant, contact_phone, message, owner_full_name, business_legal_name, ein, verification_doc_path, created_at, user_id, restaurant_id")
     .order("created_at", { ascending: false });
 
-  // Sign verification doc URLs (private bucket)
-  const withSigned = await Promise.all(
-    (claims ?? []).map(async (c: any) => {
-      if (!c.verification_doc_path) return c;
-      const { data } = await admin.storage
-        .from("verification")
-        .createSignedUrl(c.verification_doc_path, 3600);
-      return { ...c, verification_signed_url: data?.signedUrl ?? null };
+  if (error) {
+    return (
+      <div className="postcard p-4 border-red-700 border-2">
+        <div className="eyebrow text-red-700">Error loading claims</div>
+        <pre className="font-mono text-xs mt-2 whitespace-pre-wrap">{error.message}</pre>
+      </div>
+    );
+  }
+
+  const claims = claimsRaw ?? [];
+
+  // 2) Gather related user/restaurant IDs, batch-fetch in one query each
+  const userIds = Array.from(new Set(claims.map((c) => c.user_id)));
+  const restIds = Array.from(new Set(claims.map((c) => c.restaurant_id)));
+
+  const [{ data: profiles }, { data: restaurants }] = await Promise.all([
+    userIds.length
+      ? admin.from("profiles").select("id, username, display_name").in("id", userIds)
+      : Promise.resolve({ data: [] }),
+    restIds.length
+      ? admin.from("restaurants").select("id, name, city, is_active").in("id", restIds)
+      : Promise.resolve({ data: [] }),
+  ]);
+
+  const profileById = new Map((profiles ?? []).map((p: any) => [p.id, p]));
+  const restById    = new Map((restaurants ?? []).map((r: any) => [r.id, r]));
+
+  // 3) Sign doc URLs, merge joins into each claim
+  const decorated = await Promise.all(
+    claims.map(async (c: any) => {
+      let signedUrl: string | null = null;
+      if (c.verification_doc_path) {
+        const { data } = await admin.storage
+          .from("verification")
+          .createSignedUrl(c.verification_doc_path, 3600);
+        signedUrl = data?.signedUrl ?? null;
+      }
+      return {
+        ...c,
+        profile: profileById.get(c.user_id) ?? null,
+        restaurant: restById.get(c.restaurant_id) ?? null,
+        verification_signed_url: signedUrl,
+      };
     }),
   );
 
-  const pending = withSigned.filter((c: any) => c.status === "pending");
-  const decided = withSigned.filter((c: any) => c.status !== "pending");
+  const pending = decorated.filter((c) => c.status === "pending");
+  const decided = decorated.filter((c) => c.status !== "pending");
 
   return (
     <div className="flex flex-col gap-6">
       <header>
         <div className="eyebrow">Admin</div>
         <h1 className="headline text-3xl mt-2">Restaurant claims</h1>
+        <p className="font-mono text-[10px] tracking-[0.15em] uppercase text-[var(--pp-ink-soft)] mt-1">
+          {claims.length} total · {pending.length} pending
+        </p>
       </header>
 
       <section>
         <h2 className="section-heading">Pending ({pending.length})</h2>
         {pending.length === 0 && <p className="font-serif italic text-[var(--pp-ink-soft)] text-sm mt-3">No pending claims.</p>}
         <ul className="flex flex-col gap-3 mt-3">
-          {pending.map((c: any) => (
+          {pending.map((c) => (
             <li key={c.id} className="postcard p-4 flex flex-col gap-3">
               <div className="flex items-start justify-between gap-3">
                 <div className="flex-1 min-w-0">
-                  <div className="font-serif text-lg">{c.restaurants?.name}</div>
+                  <div className="font-serif text-lg">{c.restaurant?.name ?? "(restaurant missing)"}</div>
                   <div className="font-mono text-[10px] tracking-[0.15em] uppercase text-[var(--pp-ink-soft)]">
-                    {c.restaurants?.city} {c.restaurants?.is_active ? "" : "· (not yet listed publicly)"}
+                    {c.restaurant?.city} {c.restaurant && !c.restaurant.is_active ? "· (not yet listed publicly)" : ""}
                   </div>
                   <dl className="mt-3 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-sm">
                     <dt className="eyebrow">Applicant</dt>
                     <dd>
-                      {c.owner_full_name}
-                      <span className="font-mono text-[10px] text-[var(--pp-ink-soft)] ml-2">@{c.profiles?.username}</span>
+                      {c.owner_full_name ?? "—"}
+                      {c.profile?.username && (
+                        <span className="font-mono text-[10px] text-[var(--pp-ink-soft)] ml-2">@{c.profile.username}</span>
+                      )}
                     </dd>
                     <dt className="eyebrow">Role</dt><dd>{c.role_at_restaurant ?? "—"}</dd>
                     <dt className="eyebrow">Phone</dt><dd className="font-mono">{c.contact_phone ?? "—"}</dd>
@@ -74,14 +113,16 @@ export default async function ClaimsPage() {
                 ) : (
                   <span className="text-[var(--pp-ink-soft)] italic">No document uploaded</span>
                 )}
-                <a
-                  href={`https://www.ark.org/corp-search/?search=${encodeURIComponent(c.business_legal_name ?? "")}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-[var(--pp-burgundy)] underline"
-                >
-                  Check Arkansas SOS →
-                </a>
+                {c.business_legal_name && (
+                  <a
+                    href={`https://www.ark.org/corp-search/?search=${encodeURIComponent(c.business_legal_name)}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-[var(--pp-burgundy)] underline"
+                  >
+                    Check Arkansas SOS →
+                  </a>
+                )}
               </div>
             </li>
           ))}
@@ -92,11 +133,11 @@ export default async function ClaimsPage() {
         <section>
           <h2 className="section-heading">Decided</h2>
           <ul className="flex flex-col gap-1 text-sm mt-3">
-            {decided.map((c: any) => (
+            {decided.map((c) => (
               <li key={c.id} className="border border-[var(--pp-cream-dark)] rounded px-3 py-2 flex items-center justify-between">
                 <span>
-                  <span className="font-serif">{c.restaurants?.name}</span>{" "}
-                  <span className="font-mono text-[10px] text-[var(--pp-ink-soft)]">@{c.profiles?.username}</span>
+                  <span className="font-serif">{c.restaurant?.name ?? "(unknown)"}</span>{" "}
+                  <span className="font-mono text-[10px] text-[var(--pp-ink-soft)]">@{c.profile?.username}</span>
                 </span>
                 <span
                   className={`font-mono text-[10px] tracking-[0.2em] uppercase ${
