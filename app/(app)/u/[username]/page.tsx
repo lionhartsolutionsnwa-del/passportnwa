@@ -4,9 +4,9 @@ import { createClient } from "@/lib/supabase/server";
 import { followAction, unfollowAction } from "./actions";
 
 function tier(spotsVisited: number) {
-  if (spotsVisited >= 25) return { name: "NWA Legend", code: "L-3" };
-  if (spotsVisited >= 10) return { name: "Local",      code: "L-2" };
-  if (spotsVisited >= 3)  return { name: "Regular",    code: "L-1" };
+  if (spotsVisited >= 100) return { name: "NWA Legend", code: "L-3" };
+  if (spotsVisited >= 50)  return { name: "Local",      code: "L-2" };
+  if (spotsVisited >= 10)  return { name: "Regular",    code: "L-1" };
   return { name: "Explorer", code: "L-0" };
 }
 

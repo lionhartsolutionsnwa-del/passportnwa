@@ -101,12 +101,17 @@ export default async function RestaurantPage({
       <div className="postcard p-5 text-center">
         <div className="eyebrow">To Stamp Your Passport</div>
         <p className="mt-2 font-serif italic text-[var(--pp-ink-soft)]">
-          Visit in person and scan the Passport NWA QR code at the table.
+          Visit in person and tap the Passport NWA coin (or scan the QR) at the table.
         </p>
       </div>
-      <Link href={`/post/new?r=${restaurant.slug}`} className="btn-ghost w-full">
-        Leave a field note
-      </Link>
+      <div className="grid grid-cols-2 gap-2">
+        <Link href={`/r/${restaurant.slug}/rewards`} className="btn-primary py-3 text-[11px]">
+          View rewards
+        </Link>
+        <Link href={`/post/new?r=${restaurant.slug}`} className="btn-ghost py-3 text-[11px]">
+          Field note
+        </Link>
+      </div>
 
       {/* Practical info — postcards */}
       <section className="grid grid-cols-2 gap-2">

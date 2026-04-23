@@ -94,7 +94,11 @@ export default async function DashboardPage() {
             <div className="eyebrow">Concierge</div>
             <h1 className="headline text-3xl mt-2">Restaurant dashboard</h1>
           </div>
-          <Link href="/dashboard/receipts" className="btn-ghost">Review receipts</Link>
+          <div className="flex flex-col gap-1.5">
+            <Link href="/dashboard/receipts" className="btn-ghost py-2 px-3 text-[10px]">Receipts</Link>
+            <Link href="/dashboard/rewards" className="btn-ghost py-2 px-3 text-[10px]">Rewards</Link>
+            <Link href="/dashboard/redemptions" className="btn-ghost py-2 px-3 text-[10px]">Redemptions</Link>
+          </div>
         </div>
         <p className="mt-2 font-serif italic text-[var(--pp-ink-soft)]">
           Managing {owned.map((o: any) => o.restaurants?.name).join(" · ")}
