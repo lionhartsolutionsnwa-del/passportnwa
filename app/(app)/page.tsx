@@ -43,6 +43,21 @@ export default async function FeedPage({
   const { data } = await query;
   const posts = (data ?? []) as unknown as FeedRow[];
 
+  // Active announcements (admin-controlled banner)
+  const { data: announcements } = await supabase
+    .from("announcements")
+    .select("id, message, link_url, link_label")
+    .order("starts_at", { ascending: false })
+    .limit(3);
+
+  // Featured restaurants
+  const { data: featured } = await supabase
+    .from("restaurants")
+    .select("slug, name, city, cuisine, cover_image_url")
+    .eq("is_featured", true)
+    .eq("is_active", true)
+    .limit(6);
+
   return (
     <div className="flex flex-col gap-6">
       <header className="text-center">
@@ -50,6 +65,48 @@ export default async function FeedPage({
         <h1 className="headline text-4xl mt-2">Passport NWA</h1>
         <div className="fleuron mt-4">⌑</div>
       </header>
+
+      {announcements && announcements.length > 0 && (
+        <div className="flex flex-col gap-2">
+          {announcements.map((a) => (
+            <div key={a.id} className="border-l-4 border-[var(--pp-burgundy)] bg-[var(--pp-cream)]/50 pl-4 py-3 pr-4">
+              <p className="font-serif text-[var(--pp-ink)]">{a.message}</p>
+              {a.link_url && (
+                <Link
+                  href={a.link_url}
+                  className="font-mono text-[10px] tracking-[0.2em] uppercase text-[var(--pp-burgundy)] mt-1 inline-block"
+                >
+                  {a.link_label ?? "Read more"} →
+                </Link>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {featured && featured.length > 0 && (
+        <section>
+          <h2 className="section-heading">Featured this week</h2>
+          <div className="flex gap-2 overflow-x-auto -mx-5 px-5 mt-3 scrollbar-none">
+            {featured.map((r) => (
+              <Link key={r.slug} href={`/r/${r.slug}`} className="postcard shrink-0 w-40">
+                <div className="h-24 overflow-hidden bg-[var(--pp-cream)]">
+                  {r.cover_image_url ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={r.cover_image_url} alt="" className="size-full object-cover" />
+                  ) : null}
+                </div>
+                <div className="p-2.5">
+                  <div className="font-serif text-sm leading-tight line-clamp-1">{r.name}</div>
+                  <div className="font-mono text-[9px] tracking-[0.2em] uppercase text-[var(--pp-ink-soft)] mt-1 truncate">
+                    {r.city}{r.cuisine ? ` · ${r.cuisine}` : ""}
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
 
       <div className="flex items-center justify-between">
         <div className="flex gap-1">

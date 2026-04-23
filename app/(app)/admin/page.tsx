@@ -41,8 +41,13 @@ export default async function AdminHomePage() {
         <h2 className="section-heading">Tools</h2>
         <div className="grid grid-cols-1 gap-2 mt-3">
           <AdminLink href="/admin/claims" title="Restaurant claims" desc="Review pending applications and approve owners." badge={pendingClaims ?? 0} />
-          <AdminLink href="/admin/restaurants/new" title="Add restaurant" desc="Pull from Google Places or add a new listing manually." />
-          <AdminLink href="/restaurants" title="Browse Atlas" desc="Public directory, see what travelers see." />
+          <AdminLink href="/admin/receipts?status=pending" title="Receipts" desc="Global receipt queue — spot fraud patterns." badge={pendingReceipts ?? 0} />
+          <AdminLink href="/admin/restaurants" title="Restaurants" desc="Edit, feature, deactivate, manage ownership, refresh from Google." />
+          <AdminLink href="/admin/users" title="Users" desc="Search travelers, grant admin, suspend, reset password." />
+          <AdminLink href="/admin/posts" title="Posts (moderation)" desc="Latest 100 posts with quick-delete." />
+          <AdminLink href="/admin/announcements" title="Broadcast" desc="Post a banner that appears on the feed." />
+          <AdminLink href="/admin/stats" title="Stats" desc="Totals, 7-day activity, top restaurants and travelers." />
+          <AdminLink href="/admin/restaurants/new" title="Add restaurant" desc="Pull from Google Places." />
         </div>
       </section>
     </div>

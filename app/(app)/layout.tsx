@@ -9,9 +9,26 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("username, points, is_admin, is_restaurant_owner")
+    .select("username, points, is_admin, is_restaurant_owner, is_suspended, suspended_reason")
     .eq("id", user.id)
     .single();
+
+  if (profile?.is_suspended) {
+    return (
+      <div className="min-h-screen flex items-center justify-center px-6">
+        <div className="max-w-sm text-center flex flex-col items-center gap-4">
+          <div className="eyebrow text-red-700">Account suspended</div>
+          <h1 className="headline text-3xl">Access paused</h1>
+          <p className="font-serif italic text-[var(--pp-ink-soft)]">
+            {profile.suspended_reason ?? "Your account has been suspended. Contact hello@passportnwa.com if this is an error."}
+          </p>
+          <form action="/auth/signout" method="POST">
+            <button className="btn-ghost">Sign out</button>
+          </form>
+        </div>
+      </div>
+    );
+  }
 
   const { count: ownedCount } = await supabase
     .from("restaurant_owners")
