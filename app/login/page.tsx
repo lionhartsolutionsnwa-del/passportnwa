@@ -1,32 +1,77 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
+type Mode = "signin" | "signup";
+
 export default function LoginPage() {
+  const router = useRouter();
+  const [mode, setMode] = useState<Mode>("signin");
   const [email, setEmail] = useState("");
-  const [status, setStatus] = useState<"idle" | "loading" | "sent" | "error">("idle");
+  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState("");
+  const [displayName, setDisplayName] = useState("");
+  const [status, setStatus] = useState<"idle" | "loading" | "ok" | "error">("idle");
   const [msg, setMsg] = useState("");
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setStatus("loading");
+    setMsg("");
     const supabase = createClient();
-    const { error } = await supabase.auth.signInWithOtp({
+
+    if (mode === "signin") {
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) {
+        setStatus("error");
+        setMsg(error.message);
+        return;
+      }
+      setStatus("ok");
+      router.push("/");
+      router.refresh();
+      return;
+    }
+
+    // Sign up
+    if (!/^[a-zA-Z0-9_]{3,30}$/.test(username)) {
+      setStatus("error");
+      setMsg("Username must be 3-30 letters, numbers, or underscores.");
+      return;
+    }
+
+    const { error } = await supabase.auth.signUp({
       email,
-      options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
+      password,
+      options: {
+        data: { username, display_name: displayName || username },
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
+      },
     });
+
     if (error) {
       setStatus("error");
       setMsg(error.message);
+      return;
+    }
+
+    // If email confirmation is OFF, signUp returns a session and the user is logged in.
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session) {
+      setStatus("ok");
+      router.push("/");
+      router.refresh();
     } else {
-      setStatus("sent");
-      setMsg("Check your email for a magic link.");
+      setStatus("ok");
+      setMsg("Check your email to confirm your account, then sign in.");
+      setMode("signin");
     }
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center px-6">
+    <main className="min-h-screen flex items-center justify-center px-6 py-12">
       <div className="w-full max-w-sm">
         <div className="text-center mb-10">
           <div className="size-14 mx-auto rounded-full border border-[var(--pp-gold)] flex items-center justify-center bg-[var(--pp-burgundy)]">
@@ -39,26 +84,81 @@ export default function LoginPage() {
           <div className="fleuron mt-6">⌑</div>
         </div>
 
+        <div className="flex gap-1 p-1 bg-white/60 border border-[var(--pp-cream-dark)] rounded-full mb-6">
+          <ModeTab active={mode === "signin"} onClick={() => setMode("signin")}>Sign in</ModeTab>
+          <ModeTab active={mode === "signup"} onClick={() => setMode("signup")}>Create account</ModeTab>
+        </div>
+
         <form onSubmit={submit} className="flex flex-col gap-3">
-          <label className="eyebrow">Travel credentials</label>
-          <input
-            type="email"
-            required
-            placeholder="you@example.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="input"
-          />
+          {mode === "signup" && (
+            <>
+              <div>
+                <label className="eyebrow">Display name</label>
+                <input
+                  required
+                  value={displayName}
+                  onChange={(e) => setDisplayName(e.target.value)}
+                  placeholder="Your name"
+                  className="input mt-1"
+                />
+              </div>
+              <div>
+                <label className="eyebrow">Handle</label>
+                <div className="mt-1 flex items-center input p-0">
+                  <span className="px-3 font-mono text-[var(--pp-ink-soft)]">@</span>
+                  <input
+                    required
+                    pattern="[a-zA-Z0-9_]{3,30}"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    placeholder="yourhandle"
+                    className="flex-1 py-3 pr-3 bg-transparent outline-none font-mono"
+                  />
+                </div>
+              </div>
+            </>
+          )}
+
+          <div>
+            <label className="eyebrow">Email</label>
+            <input
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@example.com"
+              className="input mt-1"
+            />
+          </div>
+
+          <div>
+            <label className="eyebrow">Password</label>
+            <input
+              type="password"
+              required
+              minLength={8}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="At least 8 characters"
+              className="input mt-1"
+            />
+          </div>
+
           <button
-            disabled={status === "loading" || status === "sent"}
-            className="btn-primary py-4 text-sm"
+            disabled={status === "loading"}
+            className="btn-primary py-4 text-sm mt-2"
           >
-            {status === "loading" ? "Sending..." : status === "sent" ? "Sent ✓" : "Send magic link"}
+            {status === "loading"
+              ? "..."
+              : mode === "signin"
+              ? "Sign in"
+              : "Create account"}
           </button>
+
           {msg && (
             <p
               className={`font-serif italic text-sm text-center mt-2 ${
-                status === "sent" ? "text-[var(--pp-forest)]" : "text-red-700"
+                status === "error" ? "text-red-700" : "text-[var(--pp-forest)]"
               }`}
             >
               {msg}
@@ -71,5 +171,27 @@ export default function LoginPage() {
         </p>
       </div>
     </main>
+  );
+}
+
+function ModeTab({
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`flex-1 py-2 rounded-full font-mono text-[10px] tracking-[0.2em] uppercase transition ${
+        active ? "bg-[var(--pp-burgundy)] text-[var(--pp-cream)]" : "text-[var(--pp-ink-soft)]"
+      }`}
+    >
+      {children}
+    </button>
   );
 }
