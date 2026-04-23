@@ -37,7 +37,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           <div className="flex items-center gap-3">
             {profile?.is_admin && (
               <Link
-                href="/admin/restaurants/new"
+                href="/admin"
                 className="font-mono text-[9px] tracking-[0.2em] uppercase px-2 py-1 rounded border border-[var(--pp-burgundy)] text-[var(--pp-burgundy)]"
               >
                 Admin
