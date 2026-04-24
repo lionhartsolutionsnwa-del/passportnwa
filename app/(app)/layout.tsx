@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import SiteFooter from "@/components/site-footer";
+import NotificationsBell from "@/components/notifications-bell";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
@@ -60,6 +61,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
                 Admin
               </Link>
             )}
+            <NotificationsBell />
             <span className="font-mono text-xs text-[var(--pp-burgundy)]">
               <span className="text-[var(--pp-gold)]">★</span> {profile?.points ?? 0}
             </span>

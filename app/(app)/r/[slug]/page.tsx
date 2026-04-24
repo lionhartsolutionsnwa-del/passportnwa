@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import RateWidget from "./rate-widget";
 
 export default async function RestaurantPage({
   params,
@@ -41,6 +42,18 @@ export default async function RestaurantPage({
     .eq("restaurant_id", restaurant.id)
     .order("created_at", { ascending: false })
     .limit(6);
+
+  const { data: myRating } = user
+    ? await supabase
+        .from("restaurant_ratings")
+        .select("rating")
+        .eq("user_id", user.id)
+        .eq("restaurant_id", restaurant.id)
+        .maybeSingle()
+    : { data: null };
+
+  // Show rating widget only if they've stamped this spot at least once
+  const hasStamped = (myVisits?.length ?? 0) > 0;
 
   const photos: string[] = restaurant.photo_urls ?? [];
   const mapHref = restaurant.lat && restaurant.lng
@@ -112,6 +125,14 @@ export default async function RestaurantPage({
           Field note
         </Link>
       </div>
+
+      {hasStamped && (
+        <RateWidget
+          restaurantId={restaurant.id}
+          slug={restaurant.slug}
+          initialRating={myRating?.rating ?? null}
+        />
+      )}
 
       {/* Practical info — postcards */}
       <section className="grid grid-cols-2 gap-2">

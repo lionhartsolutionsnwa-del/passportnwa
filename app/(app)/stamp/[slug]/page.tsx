@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { createNotification } from "@/lib/notifications";
+import RateWidget from "@/app/(app)/r/[slug]/rate-widget";
 
 export default async function StampPage({
   params,
@@ -102,7 +104,24 @@ export default async function StampPage({
         <ErrorCard title="Couldn't stamp" message={error.message} />
       );
     }
+    // Nudge the traveler to rate this spot
+    await createNotification({
+      userId: user.id,
+      kind: "rate_restaurant",
+      title: `Rate ${restaurant.name}`,
+      body: "Your rating helps us shape the Atlas and future Discover feed.",
+      linkUrl: `/r/${restaurant.slug}`,
+      restaurantId: restaurant.id,
+    });
   }
+
+  // Pull any existing rating so the widget can reflect it
+  const { data: existingRating } = await supabase
+    .from("restaurant_ratings")
+    .select("rating")
+    .eq("user_id", user.id)
+    .eq("restaurant_id", restaurant.id)
+    .maybeSingle();
 
   return (
     <div className="flex flex-col gap-6 items-center text-center">
@@ -133,6 +152,14 @@ export default async function StampPage({
       )}
 
       <div className="fleuron w-full max-w-xs">⌑</div>
+
+      <div className="w-full max-w-sm">
+        <RateWidget
+          restaurantId={restaurant.id}
+          slug={restaurant.slug}
+          initialRating={existingRating?.rating ?? null}
+        />
+      </div>
 
       <div className="postcard p-4 max-w-xs w-full text-center">
         <div className="eyebrow">Earn points</div>
