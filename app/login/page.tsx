@@ -53,9 +53,9 @@ export default function LoginPage() {
       return;
     }
 
-    if (smsMarketing && !phone) {
+    if (!phone.trim()) {
       setStatus("error");
-      setMsg("Add a phone number or uncheck SMS marketing consent.");
+      setMsg("Phone number is required for account security.");
       return;
     }
 
@@ -171,14 +171,18 @@ export default function LoginPage() {
           {mode === "signup" && (
             <>
               <div>
-                <label className="eyebrow">Phone (optional)</label>
+                <label className="eyebrow">Phone</label>
                 <input
                   type="tel"
+                  required
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="(479) 555-0100"
                   className="input mt-1"
                 />
+                <p className="font-mono text-[10px] text-[var(--pp-ink-soft)] mt-1.5">
+                  For account security and service messages. We won't text you marketing unless you opt in below.
+                </p>
               </div>
 
               <div>
@@ -219,7 +223,7 @@ export default function LoginPage() {
                     className="mt-0.5"
                   />
                   <span className="text-xs font-serif text-[var(--pp-ink)]">
-                    Text me deals and perks (msg & data rates apply; reply STOP to quit). Requires a phone number above.
+                    Text me deals and perks (msg & data rates apply; reply STOP to quit). Completely optional.
                   </span>
                 </label>
               </div>

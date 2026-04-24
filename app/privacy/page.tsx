@@ -18,11 +18,14 @@ export default function PrivacyPage() {
 
       <Section title="What we collect">
         <ul className="list-disc pl-6 space-y-1">
-          <li>Account info you give us: email, username, display name, optional phone number, bio, avatar</li>
+          <li>Account info you give us: email, username, display name, <strong>phone number</strong>, bio, avatar</li>
           <li>Activity on the app: check-ins (stamps), posts, photo uploads, receipts, rewards redeemed, companions</li>
           <li>Device and session data: IP address, browser, timestamps (for security and anti-abuse)</li>
           <li>If you sign up as a restaurant owner: business name, EIN, role, contact phone, and a verification document</li>
         </ul>
+        <p className="mt-2">
+          <strong>Why we require a phone number:</strong> account security, recovery, anti-fraud, and future two-factor authentication. We also use it to send service messages (receipt updates, redemption confirmations). We <strong>do not</strong> send marketing texts unless you've separately opted in.
+        </p>
       </Section>
 
       <Section title="How we use it">

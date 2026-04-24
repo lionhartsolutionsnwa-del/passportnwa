@@ -97,14 +97,18 @@ export default async function SettingsPage() {
         </div>
 
         <div>
-          <label className="eyebrow">Phone (optional)</label>
+          <label className="eyebrow">Phone</label>
           <input
             name="phone"
             type="tel"
+            required
             defaultValue={profile?.phone ?? ""}
             placeholder="(479) 555-0100"
             className="input mt-2"
           />
+          <p className="font-mono text-[10px] text-[var(--pp-ink-soft)] mt-1">
+            Used for account security and service messages. Marketing texts are separate (below).
+          </p>
         </div>
 
         <div className="postcard p-4 flex flex-col gap-3">
