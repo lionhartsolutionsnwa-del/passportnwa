@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { redeemRewardAction } from "./actions";
 
 export default async function RestaurantRewardsPage({
   params,
@@ -47,19 +46,23 @@ export default async function RestaurantRewardsPage({
         <div className="mt-3 postage">Your balance · <span className="star">★</span> {profile?.points ?? 0}</div>
       </header>
 
-      {!rewards?.length && (
+      <div className="postcard p-4 border-l-4 border-[var(--pp-gold)]">
+        <div className="eyebrow">Redemption coming soon</div>
+        <p className="font-serif italic text-[var(--pp-ink-soft)] text-sm mt-2">
+          Points are accumulating in every traveler's passport. Redemption opens once we hit launch scale — keep stamping to bank your balance.
+        </p>
+      </div>
+
+      {!rewards?.length ? (
         <div className="postcard p-6 text-center">
           <p className="font-serif italic text-[var(--pp-ink-soft)]">
             This restaurant hasn't listed any rewards yet.
           </p>
         </div>
-      )}
-
-      <ul className="flex flex-col gap-3">
-        {rewards?.map((r) => {
-          const canAfford = (profile?.points ?? 0) >= r.points_cost;
-          return (
-            <li key={r.id} className="postcard p-4 flex items-center justify-between gap-3">
+      ) : (
+        <ul className="flex flex-col gap-3">
+          {rewards.map((r) => (
+            <li key={r.id} className="postcard p-4 flex items-center justify-between gap-3 opacity-75">
               <div className="flex-1 min-w-0">
                 <div className="font-serif text-lg">{r.name}</div>
                 {r.description && (
@@ -69,18 +72,13 @@ export default async function RestaurantRewardsPage({
                   <span className="star">★</span> {r.points_cost}
                 </div>
               </div>
-              <form action={redeemRewardAction.bind(null, r.id, restaurant.slug)}>
-                <button
-                  disabled={!canAfford}
-                  className={canAfford ? "btn-primary py-3 px-5 text-[11px]" : "btn-ghost py-3 px-5 text-[11px] opacity-40"}
-                >
-                  {canAfford ? "Redeem" : "Need more"}
-                </button>
-              </form>
+              <span className="font-mono text-[10px] tracking-[0.2em] uppercase text-[var(--pp-ink-soft)] px-3 py-2 border border-[var(--pp-cream-dark)] rounded-full shrink-0">
+                Coming soon
+              </span>
             </li>
-          );
-        })}
-      </ul>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }

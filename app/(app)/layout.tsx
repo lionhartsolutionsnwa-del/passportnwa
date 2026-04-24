@@ -70,6 +70,18 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         </div>
       </header>
 
+      <div className="max-w-2xl mx-auto w-full px-5 pt-2">
+        <div className="flex items-center gap-2 px-3 py-2 border-l-4 border-[var(--pp-gold)] bg-[var(--pp-cream)]/50 rounded-r">
+          <span className="font-mono text-[9px] tracking-[0.2em] uppercase px-2 py-0.5 rounded border border-[var(--pp-burgundy)] text-[var(--pp-burgundy)] font-bold">
+            Beta
+          </span>
+          <p className="font-serif italic text-xs text-[var(--pp-ink-soft)] leading-tight flex-1">
+            Passport NWA is in active development. Send feedback to{" "}
+            <a href="mailto:hello@passportnwa.com" className="text-[var(--pp-burgundy)] underline">hello@passportnwa.com</a>.
+          </p>
+        </div>
+      </div>
+
       <main className="flex-1 max-w-2xl mx-auto w-full px-5 py-6 pb-4">{children}</main>
 
       <SiteFooter />
