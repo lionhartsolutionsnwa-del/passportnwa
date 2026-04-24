@@ -43,6 +43,44 @@ export default async function StampPage({
     );
   }
 
+  // Only stamp if the restaurant is actually registered with Passport NWA
+  // (has at least one approved owner). Imported-but-unclaimed restaurants are visible
+  // in the Atlas but can't be stamped yet.
+  const { count: ownerCount } = await supabase
+    .from("restaurant_owners")
+    .select("user_id", { count: "exact", head: true })
+    .eq("restaurant_id", restaurant.id);
+
+  if ((ownerCount ?? 0) === 0) {
+    return (
+      <div className="flex flex-col items-center gap-5 text-center py-6">
+        <div className="eyebrow">Not on Passport NWA yet</div>
+        <h1 className="headline text-3xl">{restaurant.name}</h1>
+        <div className="font-mono text-[10px] tracking-[0.3em] uppercase text-[var(--pp-ink-soft)]">
+          {restaurant.city}
+        </div>
+
+        <div className="fleuron w-full max-w-xs">⌑</div>
+
+        <div className="postcard p-5 max-w-sm w-full">
+          <p className="font-serif italic text-[var(--pp-ink)] leading-relaxed">
+            This restaurant hasn't joined Passport NWA yet, so stamps and points aren't available here.
+          </p>
+          <p className="font-serif italic text-[var(--pp-ink-soft)] text-sm mt-3">
+            Love this spot? Tell the owner or manager to sign up — it's free.
+          </p>
+        </div>
+
+        <Link href="/restaurant-signup" className="btn-primary">
+          Share the signup link
+        </Link>
+        <Link href="/restaurants" className="btn-ghost">
+          Back to the Atlas
+        </Link>
+      </div>
+    );
+  }
+
   // Rate-limit: prevent double-stamping the same spot within 1 hour
   const { data: recent } = await supabase
     .from("checkins")
