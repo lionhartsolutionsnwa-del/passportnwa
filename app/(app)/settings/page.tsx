@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { saveProfileAction } from "./actions";
 import FavoritePicker from "./favorite-picker";
+import ReferralCard from "./referral-card";
 
 export default async function SettingsPage() {
   const supabase = await createClient();
@@ -19,6 +20,11 @@ export default async function SettingsPage() {
   const { data: favRestaurants } = favIds.length
     ? await supabase.from("restaurants").select("id, name, city").in("id", favIds)
     : { data: [] };
+
+  const { count: referredCount } = await supabase
+    .from("profiles")
+    .select("id", { count: "exact", head: true })
+    .eq("referred_by", user.id);
 
   return (
     <div className="flex flex-col gap-6">
@@ -133,6 +139,13 @@ export default async function SettingsPage() {
         <FavoritePicker
           initial={(favRestaurants ?? []).map((r: any) => ({ id: r.id, name: r.name, city: r.city }))}
         />
+
+        {profile?.username && (
+          <ReferralCard
+            username={profile.username}
+            referredCount={referredCount ?? 0}
+          />
+        )}
 
         <button className="btn-primary py-4 mt-2 text-sm">Save passport</button>
       </form>

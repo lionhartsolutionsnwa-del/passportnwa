@@ -1,24 +1,31 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 type Mode = "signin" | "signup";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [mode, setMode] = useState<Mode>("signin");
+  const searchParams = useSearchParams();
+  const initialRef = (searchParams.get("ref") ?? "").replace(/^@/, "").slice(0, 30);
+  const [mode, setMode] = useState<Mode>(initialRef ? "signup" : "signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [phone, setPhone] = useState("");
+  const [referralCode, setReferralCode] = useState(initialRef);
   const [emailMarketing, setEmailMarketing] = useState(false);
   const [smsMarketing, setSmsMarketing] = useState(false);
   const [status, setStatus] = useState<"idle" | "loading" | "ok" | "error">("idle");
   const [msg, setMsg] = useState("");
+
+  useEffect(() => {
+    if (initialRef) setReferralCode(initialRef);
+  }, [initialRef]);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -52,6 +59,7 @@ export default function LoginPage() {
       return;
     }
 
+    const cleanedRef = referralCode.trim().replace(/^@/, "");
     const { error } = await supabase.auth.signUp({
       email,
       password,
@@ -62,6 +70,7 @@ export default function LoginPage() {
           phone: phone || null,
           email_marketing_consent: emailMarketing,
           sms_marketing_consent: smsMarketing,
+          referred_by_username: cleanedRef || null,
         },
         emailRedirectTo: `${window.location.origin}/auth/callback`,
       },
@@ -170,6 +179,24 @@ export default function LoginPage() {
                   placeholder="(479) 555-0100"
                   className="input mt-1"
                 />
+              </div>
+
+              <div>
+                <label className="eyebrow">Referral code (optional)</label>
+                <div className="mt-1 flex items-center input p-0">
+                  <span className="px-3 font-mono text-[var(--pp-ink-soft)]">@</span>
+                  <input
+                    value={referralCode}
+                    onChange={(e) => setReferralCode(e.target.value.replace(/^@/, ""))}
+                    placeholder="friend's username"
+                    className="flex-1 py-3 pr-3 bg-transparent outline-none font-mono"
+                  />
+                </div>
+                {referralCode && (
+                  <p className="font-serif italic text-[var(--pp-forest)] text-xs mt-1.5">
+                    You and @{referralCode} will each earn +25 points when you join.
+                  </p>
+                )}
               </div>
 
               <div className="postcard p-3 flex flex-col gap-2">
