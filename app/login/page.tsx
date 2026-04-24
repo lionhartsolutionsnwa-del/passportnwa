@@ -90,9 +90,8 @@ export default function LoginPage() {
     <main className="min-h-screen flex items-center justify-center px-6 py-12">
       <div className="w-full max-w-sm">
         <div className="text-center mb-10">
-          <div className="size-14 mx-auto rounded-full border border-[var(--pp-gold)] flex items-center justify-center bg-[var(--pp-burgundy)]">
-            <span className="font-serif text-[var(--pp-gold)] text-2xl leading-none">P</span>
-          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo.png" alt="Passport NWA" className="size-20 mx-auto rounded-full" />
           <h1 className="font-serif text-3xl mt-5 text-[var(--pp-ink)]">Passport NWA</h1>
           <div className="font-mono text-[10px] tracking-[0.4em] uppercase text-[var(--pp-ink-soft)] mt-1">
             Northwest Arkansas

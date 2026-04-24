@@ -4,7 +4,10 @@
   "description": "Loyalty for Northwest Arkansas's best independent restaurants",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0a0a0a",
-  "theme_color": "#0a0a0a",
-  "icons": []
+  "background_color": "#f7eeda",
+  "theme_color": "#5b1f29",
+  "icons": [
+    { "src": "/logo.png", "sizes": "859x859", "type": "image/png", "purpose": "any" },
+    { "src": "/logo.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
 }

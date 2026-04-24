@@ -44,9 +44,8 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       <header className="sticky top-0 z-20 bg-[var(--pp-paper)]/85 backdrop-blur border-b border-[var(--pp-cream-dark)]">
         <div className="max-w-2xl mx-auto px-5 h-14 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2.5">
-            <div className="size-7 rounded-full border border-[var(--pp-gold)] flex items-center justify-center bg-[var(--pp-burgundy)]">
-              <span className="font-serif text-[var(--pp-gold)] text-sm leading-none">P</span>
-            </div>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo.png" alt="Passport NWA" className="size-8 rounded-full" />
             <div className="leading-tight">
               <div className="font-serif text-[15px] text-[var(--pp-burgundy)] tracking-tight">Passport</div>
               <div className="font-mono text-[8px] tracking-[0.4em] text-[var(--pp-ink-soft)] uppercase -mt-0.5">Northwest Arkansas</div>
