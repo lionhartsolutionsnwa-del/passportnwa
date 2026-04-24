@@ -6,6 +6,7 @@ import { createClient } from "@supabase/supabase-js";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
+import { isBlocked } from "./chain-blocklist.mjs";
 
 // --- Load .env.local manually (Node doesn't read it automatically) ---
 const envPath = resolve(dirname(fileURLToPath(import.meta.url)), "..", ".env.local");
@@ -154,6 +155,7 @@ for (const q of QUERIES) {
     for (const p of json.places ?? []) {
       if (!p.id) continue;
       if ((p.userRatingCount ?? 0) < MIN_REVIEWS) continue;
+      if (isBlocked({ name: p.displayName?.text, types: p.types })) continue;
       const city = pickCity(p);
       // Keep things truly in NWA — Google sometimes leaks nearby Missouri spots
       const NWA_CITIES = new Set([

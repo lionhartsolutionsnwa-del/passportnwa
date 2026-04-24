@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "import-restaurants": "node scripts/import-restaurants.mjs"
+    "import-restaurants": "node scripts/import-restaurants.mjs",
+    "cleanup-chains": "node scripts/cleanup-chains.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.10.2",
