@@ -86,7 +86,7 @@ export default function LoginPage() {
     const { data: { session } } = await supabase.auth.getSession();
     if (session) {
       setStatus("ok");
-      router.push("/");
+      router.push("/welcome");
       router.refresh();
     } else {
       setStatus("ok");

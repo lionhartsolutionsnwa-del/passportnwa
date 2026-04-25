@@ -11,9 +11,14 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("username, points, is_admin, is_restaurant_owner, is_suspended, suspended_reason")
+    .select("username, points, is_admin, is_restaurant_owner, is_suspended, suspended_reason, onboarded_at")
     .eq("id", user.id)
     .single();
+
+  // Send legacy users (signed up before onboarding existed) through the welcome moment once.
+  if (profile && !profile.onboarded_at && profile.username) {
+    redirect("/welcome");
+  }
 
   if (profile?.is_suspended) {
     return (
