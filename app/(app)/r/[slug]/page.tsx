@@ -164,11 +164,11 @@ export default async function RestaurantPage({
         </p>
       </div>
       <div className="grid grid-cols-2 gap-2">
-        <Link href={`/r/${restaurant.slug}/rewards`} className="btn-primary btn-sm">
-          View rewards
+        <Link href={`/r/${restaurant.slug}/rewards`} className="btn-primary">
+          Rewards
         </Link>
-        <Link href={`/post/new?r=${restaurant.slug}`} className="btn-ghost btn-sm">
-          Field note
+        <Link href={`/post/new?r=${restaurant.slug}`} className="btn-ghost">
+          Post note
         </Link>
       </div>
 

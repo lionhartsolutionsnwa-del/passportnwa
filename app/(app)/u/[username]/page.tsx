@@ -179,44 +179,30 @@ export default async function ProfilePage({
       </section>
 
       {/* ACTION BAR */}
-      <div className="px-6 mt-5 flex justify-end gap-2">
+      <div className="px-6 mt-5 flex flex-wrap justify-end gap-2">
         {isMe ? (
           <>
-            <Link href="/settings" className="text-xs px-4 py-2.5 rounded-md border border-[var(--pp-burgundy)]/40 text-[var(--pp-burgundy)] font-mono tracking-[0.18em] uppercase">
-              Edit
-            </Link>
-            <Link href="/companions" className="text-xs px-4 py-2.5 rounded-md border border-[var(--pp-burgundy)]/40 text-[var(--pp-burgundy)] font-mono tracking-[0.18em] uppercase">
-              Companions
-            </Link>
+            <Link href="/settings" className="btn-ghost btn-sm">Edit</Link>
+            <Link href="/companions" className="btn-ghost btn-sm">Companions</Link>
             <form action="/auth/signout" method="POST">
-              <button className="text-xs px-4 py-2.5 rounded-md border border-[var(--pp-burgundy)]/40 text-[var(--pp-burgundy)] font-mono tracking-[0.18em] uppercase">
-                Sign out
-              </button>
+              <button className="btn-ghost btn-sm">Sign out</button>
             </form>
           </>
         ) : areCompanions ? (
           <form action={removeCompanionAction.bind(null, profile.id, profile.username)}>
-            <button className="text-xs px-5 py-2.5 rounded-md border border-[var(--pp-burgundy)] text-[var(--pp-burgundy)] font-mono tracking-[0.18em] uppercase">
-              Companion ✓
-            </button>
+            <button className="btn-ghost btn-sm">Companion ✓</button>
           </form>
         ) : iFollowThem ? (
           <form action={removeCompanionAction.bind(null, profile.id, profile.username)}>
-            <button className="text-xs px-5 py-2.5 rounded-md border border-[var(--pp-burgundy)]/50 text-[var(--pp-burgundy)] font-mono tracking-[0.18em] uppercase">
-              Invitation sent
-            </button>
+            <button className="btn-ghost btn-sm">Invitation sent</button>
           </form>
         ) : theyFollowMe ? (
           <form action={addCompanionAction.bind(null, profile.id, profile.username)}>
-            <button className="text-xs px-5 py-2.5 rounded-md bg-[var(--pp-gold)] text-[var(--pp-ink)] font-mono tracking-[0.18em] uppercase font-semibold">
-              Add back
-            </button>
+            <button className="btn-secondary btn-sm">Add back</button>
           </form>
         ) : (
           <form action={addCompanionAction.bind(null, profile.id, profile.username)}>
-            <button className="text-xs px-5 py-2.5 rounded-md bg-[var(--pp-burgundy)] text-[var(--pp-cream)] font-mono tracking-[0.18em] uppercase font-semibold">
-              Add companion
-            </button>
+            <button className="btn-primary btn-sm">Add companion</button>
           </form>
         )}
       </div>
