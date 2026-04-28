@@ -140,39 +140,39 @@ export default async function ProfilePage({
       <div className="px-6 mt-5 flex justify-end gap-2">
         {isMe ? (
           <>
-            <Link href="/settings" className="text-xs px-3 py-2 rounded-md border border-[var(--pp-burgundy)]/30 text-[var(--pp-burgundy)] font-mono tracking-widest uppercase">
+            <Link href="/settings" className="text-xs px-4 py-2.5 rounded-md border border-[var(--pp-burgundy)]/40 text-[var(--pp-burgundy)] font-mono tracking-[0.18em] uppercase">
               Edit
             </Link>
-            <Link href="/companions" className="text-xs px-3 py-2 rounded-md border border-[var(--pp-burgundy)]/30 text-[var(--pp-burgundy)] font-mono tracking-widest uppercase">
-              Find companions
+            <Link href="/companions" className="text-xs px-4 py-2.5 rounded-md border border-[var(--pp-burgundy)]/40 text-[var(--pp-burgundy)] font-mono tracking-[0.18em] uppercase">
+              Companions
             </Link>
             <form action="/auth/signout" method="POST">
-              <button className="text-xs px-3 py-2 rounded-md border border-[var(--pp-burgundy)]/30 text-[var(--pp-burgundy)] font-mono tracking-widest uppercase">
+              <button className="text-xs px-4 py-2.5 rounded-md border border-[var(--pp-burgundy)]/40 text-[var(--pp-burgundy)] font-mono tracking-[0.18em] uppercase">
                 Sign out
               </button>
             </form>
           </>
         ) : areCompanions ? (
           <form action={removeCompanionAction.bind(null, profile.id, profile.username)}>
-            <button className="text-xs px-4 py-2 rounded-md border border-[var(--pp-burgundy)] text-[var(--pp-burgundy)] font-mono tracking-widest uppercase">
+            <button className="text-xs px-5 py-2.5 rounded-md border border-[var(--pp-burgundy)] text-[var(--pp-burgundy)] font-mono tracking-[0.18em] uppercase">
               Companion ✓
             </button>
           </form>
         ) : iFollowThem ? (
           <form action={removeCompanionAction.bind(null, profile.id, profile.username)}>
-            <button className="text-xs px-4 py-2 rounded-md border border-[var(--pp-burgundy)]/40 text-[var(--pp-burgundy)] font-mono tracking-widest uppercase">
+            <button className="text-xs px-5 py-2.5 rounded-md border border-[var(--pp-burgundy)]/50 text-[var(--pp-burgundy)] font-mono tracking-[0.18em] uppercase">
               Invitation sent
             </button>
           </form>
         ) : theyFollowMe ? (
           <form action={addCompanionAction.bind(null, profile.id, profile.username)}>
-            <button className="text-xs px-4 py-2 rounded-md bg-[var(--pp-gold)] text-[var(--pp-ink)] font-mono tracking-widest uppercase">
+            <button className="text-xs px-5 py-2.5 rounded-md bg-[var(--pp-gold)] text-[var(--pp-ink)] font-mono tracking-[0.18em] uppercase font-semibold">
               Add back
             </button>
           </form>
         ) : (
           <form action={addCompanionAction.bind(null, profile.id, profile.username)}>
-            <button className="text-xs px-4 py-2 rounded-md bg-[var(--pp-burgundy)] text-[var(--pp-cream)] font-mono tracking-widest uppercase">
+            <button className="text-xs px-5 py-2.5 rounded-md bg-[var(--pp-burgundy)] text-[var(--pp-cream)] font-mono tracking-[0.18em] uppercase font-semibold">
               Add companion
             </button>
           </form>
@@ -217,10 +217,10 @@ export default async function ProfilePage({
             No companions yet. Companions form when two travelers add each other.
           </p>
         ) : (
-          <div className="flex gap-4 overflow-x-auto -mx-6 px-6 mt-3 scrollbar-none">
+          <div className="flex gap-4 overflow-x-auto -mx-6 px-6 mt-4 scrollbar-none">
             {companions.map((f) => (
-              <Link key={f.username} href={`/u/${f.username}`} className="flex flex-col items-center gap-1.5 shrink-0 w-16">
-                <div className="size-14 rounded-full overflow-hidden bg-[var(--pp-burgundy)]/10 ring-1 ring-[var(--pp-burgundy)]/20 flex items-center justify-center font-serif text-lg text-[var(--pp-burgundy)]">
+              <Link key={f.username} href={`/u/${f.username}`} className="flex flex-col items-center gap-2 shrink-0 w-20">
+                <div className="size-16 rounded-full overflow-hidden bg-[var(--pp-burgundy)]/10 ring-1 ring-[var(--pp-burgundy)]/25 flex items-center justify-center font-serif text-xl text-[var(--pp-burgundy)]">
                   {f.avatar_url ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={f.avatar_url} alt="" className="size-full object-cover" />
@@ -228,7 +228,7 @@ export default async function ProfilePage({
                     f.username.slice(0, 1).toUpperCase()
                   )}
                 </div>
-                <div className="text-[10px] truncate w-full text-center font-mono text-[var(--pp-ink)]/70">@{f.username}</div>
+                <div className="text-[11px] truncate w-full text-center font-mono text-[var(--pp-ink)]/75">@{f.username}</div>
               </Link>
             ))}
           </div>
@@ -289,9 +289,9 @@ function Field({ label, value }: { label: string; value: string }) {
 
 function Seal({ label, value }: { label: string; value: number }) {
   return (
-    <div className="text-center py-2 px-2 border border-[var(--pp-burgundy)]/25 rounded-lg bg-white/30 backdrop-blur-sm shadow-inner">
-      <div className="font-serif text-xl text-[var(--pp-burgundy)] font-semibold">{value}</div>
-      <div className="font-mono text-[9px] tracking-[0.3em] uppercase text-[var(--pp-burgundy)]/70 mt-0.5">{label}</div>
+    <div className="text-center py-3 px-2 border border-[var(--pp-burgundy)]/25 rounded-lg bg-white/35 backdrop-blur-sm shadow-inner">
+      <div className="font-serif text-2xl text-[var(--pp-burgundy)] font-semibold leading-none">{value}</div>
+      <div className="font-mono text-[10px] tracking-[0.28em] uppercase text-[var(--pp-burgundy)]/75 mt-1.5">{label}</div>
     </div>
   );
 }

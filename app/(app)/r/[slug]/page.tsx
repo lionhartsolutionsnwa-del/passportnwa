@@ -85,7 +85,7 @@ export default async function RestaurantPage({
       {/* Title block */}
       <header>
         <div className="eyebrow">{restaurant.city} · {restaurant.cuisine ?? "Restaurant"}</div>
-        <h1 className="headline text-4xl mt-2">{restaurant.name}</h1>
+        <h1 className="headline text-[34px] sm:text-5xl mt-2 leading-[1.05]">{restaurant.name}</h1>
         <div className="mt-3 flex flex-wrap items-center gap-2">
           {restaurant.rating != null && (
             <span className="postage">
@@ -98,16 +98,16 @@ export default async function RestaurantPage({
           )}
         </div>
         {restaurant.description && (
-          <p className="mt-4 font-serif italic text-[var(--pp-ink-soft)] leading-relaxed">
+          <p className="mt-4 font-serif italic text-[var(--pp-ink-soft)] leading-relaxed text-[15px]">
             "{restaurant.description}"
           </p>
         )}
       </header>
 
       {/* Stats line */}
-      <div className="flex items-center justify-between border-y border-[var(--pp-cream-dark)] py-3 font-mono text-[11px] tracking-[0.15em] uppercase text-[var(--pp-ink-soft)]">
-        <span><span className="text-[var(--pp-burgundy)] font-bold">{visitCount ?? 0}</span> stamps logged</span>
-        <span><span className="text-[var(--pp-burgundy)] font-bold">{myVisits?.length ?? 0}</span> yours</span>
+      <div className="flex items-center justify-between border-y border-[var(--pp-cream-dark)] py-3.5 font-mono text-xs tracking-[0.14em] uppercase text-[var(--pp-ink-soft)]">
+        <span><span className="text-[var(--pp-burgundy)] font-bold text-base">{visitCount ?? 0}</span> stamps logged</span>
+        <span><span className="text-[var(--pp-burgundy)] font-bold text-base">{myVisits?.length ?? 0}</span> yours</span>
       </div>
 
       {/* Actions */}
@@ -137,21 +137,21 @@ export default async function RestaurantPage({
       {/* Practical info — postcards */}
       <section className="grid grid-cols-2 gap-2">
         {restaurant.phone && (
-          <a href={`tel:${restaurant.phone}`} className="postcard p-3">
+          <a href={`tel:${restaurant.phone}`} className="postcard p-4">
             <div className="eyebrow">Telephone</div>
-            <div className="font-mono text-sm mt-1 truncate">{restaurant.phone}</div>
+            <div className="font-mono text-base mt-1.5 truncate">{restaurant.phone}</div>
           </a>
         )}
         {restaurant.website && (
-          <a href={restaurant.website} target="_blank" rel="noreferrer" className="postcard p-3">
+          <a href={restaurant.website} target="_blank" rel="noreferrer" className="postcard p-4">
             <div className="eyebrow">Online</div>
-            <div className="font-mono text-sm mt-1 text-[var(--pp-burgundy)] truncate">Visit →</div>
+            <div className="font-mono text-base mt-1.5 text-[var(--pp-burgundy)] truncate">Visit →</div>
           </a>
         )}
         {mapHref && (
-          <a href={mapHref} target="_blank" rel="noreferrer" className="postcard p-3 col-span-2">
+          <a href={mapHref} target="_blank" rel="noreferrer" className="postcard p-4 col-span-2">
             <div className="eyebrow">Location</div>
-            <div className="font-serif text-sm mt-1">{restaurant.address}</div>
+            <div className="font-serif text-base mt-1.5">{restaurant.address}</div>
           </a>
         )}
       </section>
@@ -164,7 +164,7 @@ export default async function RestaurantPage({
             {restaurant.hours_text.map((line: string, i: number) => {
               const [day, ...rest] = line.split(": ");
               return (
-                <li key={i} className="flex justify-between px-4 py-2.5 font-mono text-xs">
+                <li key={i} className="flex justify-between px-4 py-3 font-mono text-sm">
                   <span className="text-[var(--pp-ink-soft)]">{day}</span>
                   <span className="text-[var(--pp-ink)]">{rest.join(": ") || "—"}</span>
                 </li>

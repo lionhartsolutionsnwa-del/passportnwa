@@ -107,26 +107,26 @@ export default async function RestaurantsPage({
         {restaurants?.map((r) => (
           <li key={r.slug}>
             <Link href={`/r/${r.slug}`} className="postcard flex gap-0">
-              <div className="size-24 shrink-0 overflow-hidden border-r border-[var(--pp-cream-dark)] bg-[var(--pp-cream)]">
+              <div className="size-28 shrink-0 overflow-hidden border-r border-[var(--pp-cream-dark)] bg-[var(--pp-cream)]">
                 {r.cover_image_url ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={r.cover_image_url} alt="" className="size-full object-cover" />
                 ) : (
-                  <div className="size-full flex items-center justify-center text-[var(--pp-burgundy)]/30 font-serif text-2xl">
+                  <div className="size-full flex items-center justify-center text-[var(--pp-burgundy)]/30 font-serif text-3xl">
                     ⌑
                   </div>
                 )}
               </div>
               <div className="flex-1 min-w-0 py-3 px-4">
                 <div className="flex items-start justify-between gap-2">
-                  <div className="font-serif text-[var(--pp-ink)] leading-tight">{r.name}</div>
+                  <div className="font-serif text-base text-[var(--pp-ink)] leading-tight line-clamp-2">{r.name}</div>
                   {r.rating != null && (
                     <span className="postage shrink-0">
                       <span className="star">★</span> {Number(r.rating).toFixed(1)}
                     </span>
                   )}
                 </div>
-                <div className="font-mono text-[10px] tracking-[0.15em] uppercase text-[var(--pp-ink-soft)] mt-2 flex flex-wrap gap-x-2">
+                <div className="font-mono text-[11px] tracking-[0.14em] uppercase text-[var(--pp-ink-soft)] mt-2 flex flex-wrap gap-x-2">
                   <span>{r.city}</span>
                   {r.cuisine && <span>· {r.cuisine}</span>}
                   {r.price_level && <span>· {r.price_level}</span>}
@@ -144,7 +144,7 @@ function CityChip({ href, label, active }: { href: string; label: string; active
   return (
     <Link
       href={href}
-      className={`shrink-0 px-3 py-1.5 rounded-full font-mono text-[10px] tracking-[0.15em] uppercase border ${
+      className={`shrink-0 px-3.5 py-2 rounded-full font-mono text-[11px] tracking-[0.14em] uppercase border ${
         active
           ? "bg-[var(--pp-burgundy)] text-[var(--pp-cream)] border-[var(--pp-burgundy)]"
           : "border-[var(--pp-cream-dark)] text-[var(--pp-ink-soft)] hover:border-[var(--pp-burgundy)] hover:text-[var(--pp-burgundy)]"

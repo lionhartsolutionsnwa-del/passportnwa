@@ -32,6 +32,13 @@ html, body {
   color: var(--foreground);
   -webkit-font-smoothing: antialiased;
   font-family: var(--font-sans), ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+/* Stop iOS auto-zoom on form fields by guaranteeing 16px input text */
+input, select, textarea, button {
+  font-size: 16px;
 }
 
 body {
@@ -66,11 +73,11 @@ body::before {
 
 .eyebrow {
   font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 10px;
-  letter-spacing: 0.35em;
+  font-size: 11px;
+  letter-spacing: 0.32em;
   text-transform: uppercase;
   color: var(--pp-burgundy);
-  opacity: 0.8;
+  opacity: 0.85;
 }
 
 .section-heading {
@@ -255,15 +262,16 @@ body::before {
 .ticket-corner::before { left: -7px; top: 50%; transform: translateY(-50%); }
 .ticket-corner::after  { right: -7px; top: 50%; transform: translateY(-50%); }
 
-/* Pill button */
+/* Pill button — 44px+ tap target, readable label */
 .btn-primary {
   background: var(--pp-burgundy);
   color: var(--pp-cream);
   font-family: var(--font-mono), monospace;
-  font-size: 11px;
-  letter-spacing: 0.2em;
+  font-size: 13px;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  padding: 12px 20px;
+  padding: 14px 22px;
+  min-height: 48px;
   border-radius: 999px;
   display: inline-flex;
   align-items: center;
@@ -280,10 +288,11 @@ body::before {
   color: var(--pp-burgundy);
   border: 1px solid var(--pp-burgundy);
   font-family: var(--font-mono), monospace;
-  font-size: 11px;
-  letter-spacing: 0.2em;
+  font-size: 13px;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  padding: 11px 19px;
+  padding: 13px 21px;
+  min-height: 48px;
   border-radius: 999px;
   display: inline-flex;
   align-items: center;
@@ -293,16 +302,17 @@ body::before {
 
 .btn-ghost:hover { background: rgba(91, 31, 41, 0.06); }
 
-/* Form inputs */
+/* Form inputs — 16px text size prevents iOS auto-zoom */
 .input {
   width: 100%;
   background: white;
   border: 1px solid var(--pp-cream-dark);
-  border-radius: 6px;
-  padding: 12px 14px;
+  border-radius: 8px;
+  padding: 14px 16px;
   font-family: var(--font-sans), system-ui, sans-serif;
   color: var(--pp-ink);
-  font-size: 14px;
+  font-size: 16px;
+  line-height: 1.4;
   outline: none;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
@@ -310,6 +320,12 @@ body::before {
 .input:focus {
   border-color: var(--pp-burgundy);
   box-shadow: 0 0 0 3px rgba(91, 31, 41, 0.08);
+}
+
+/* Reading-friendly body text class for prose blocks */
+.prose-body {
+  font-size: 15px;
+  line-height: 1.65;
 }
 
 /* Rating star using gold */

@@ -135,7 +135,7 @@ export default async function FeedPage({
       {posts.map((p) => (
         <article key={p.id} className="postcard">
           <header className="flex items-center gap-3 px-4 pt-4 pb-3">
-            <div className="size-10 rounded-full overflow-hidden bg-[var(--pp-cream)] ring-1 ring-[var(--pp-cream-dark)] flex items-center justify-center font-serif text-[var(--pp-burgundy)]">
+            <div className="size-11 rounded-full overflow-hidden bg-[var(--pp-cream)] ring-1 ring-[var(--pp-cream-dark)] flex items-center justify-center font-serif text-lg text-[var(--pp-burgundy)]">
               {p.profiles?.avatar_url ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={p.profiles.avatar_url} alt="" className="size-full object-cover" />
@@ -144,32 +144,32 @@ export default async function FeedPage({
               )}
             </div>
             <div className="flex-1 min-w-0">
-              <Link href={`/u/${p.profiles?.username ?? ""}`} className="font-serif text-[var(--pp-ink)] hover:text-[var(--pp-burgundy)]">
+              <Link href={`/u/${p.profiles?.username ?? ""}`} className="font-serif text-base text-[var(--pp-ink)] hover:text-[var(--pp-burgundy)] block leading-tight">
                 {p.profiles?.display_name ?? `@${p.profiles?.username}`}
               </Link>
               {p.restaurants && (
-                <div className="font-mono text-[10px] tracking-[0.15em] uppercase text-[var(--pp-ink-soft)]">
-                  Reporting from{" "}
+                <div className="font-mono text-[11px] tracking-[0.14em] uppercase text-[var(--pp-ink-soft)] mt-0.5">
+                  At{" "}
                   <Link href={`/r/${p.restaurants.slug}`} className="text-[var(--pp-burgundy)] hover:underline">
                     {p.restaurants.name}
                   </Link>
-                  {" · "}{p.restaurants.city}
+                  <span className="opacity-70"> · {p.restaurants.city}</span>
                 </div>
               )}
             </div>
-            <time className="font-mono text-[10px] text-[var(--pp-ink-soft)] shrink-0">{timeAgo(p.created_at)}</time>
+            <time className="font-mono text-xs text-[var(--pp-ink-soft)] shrink-0">{timeAgo(p.created_at)}</time>
           </header>
           {p.photo_url && (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={p.photo_url} alt="" className="w-full max-h-[520px] object-cover border-y border-[var(--pp-cream-dark)]" />
           )}
           {p.caption && (
-            <p className="px-5 py-4 font-serif text-[var(--pp-ink)] leading-relaxed whitespace-pre-wrap">
+            <p className="px-5 py-4 font-serif text-[15px] text-[var(--pp-ink)] leading-relaxed whitespace-pre-wrap">
               {renderCaption(p.caption)}
             </p>
           )}
           {p.post_tags && p.post_tags.length > 0 && (
-            <div className="px-5 pb-4 font-mono text-[10px] tracking-[0.15em] uppercase text-[var(--pp-ink-soft)]">
+            <div className="px-5 pb-4 font-mono text-[11px] tracking-[0.14em] uppercase text-[var(--pp-ink-soft)]">
               with{" "}
               {p.post_tags
                 .map((t, i) =>
@@ -193,7 +193,7 @@ function TabLink({ active, href, children }: { active: boolean; href: string; ch
   return (
     <Link
       href={href}
-      className={`px-3 py-1.5 font-mono text-[10px] tracking-[0.15em] uppercase rounded ${
+      className={`px-3.5 py-2 font-mono text-[11px] tracking-[0.16em] uppercase rounded-md ${
         active
           ? "bg-[var(--pp-burgundy)] text-[var(--pp-cream)]"
           : "text-[var(--pp-ink-soft)] hover:text-[var(--pp-burgundy)]"

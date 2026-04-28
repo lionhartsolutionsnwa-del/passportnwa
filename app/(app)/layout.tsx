@@ -47,30 +47,30 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="sticky top-0 z-20 bg-[var(--pp-paper)]/85 backdrop-blur border-b border-[var(--pp-cream-dark)]">
-        <div className="max-w-2xl mx-auto px-5 h-14 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2.5">
+      <header className="sticky top-0 z-20 bg-[var(--pp-paper)]/90 backdrop-blur border-b border-[var(--pp-cream-dark)]">
+        <div className="max-w-2xl mx-auto px-4 h-16 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-2.5 min-w-0">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo.png" alt="Passport NWA" className="size-8 rounded-full" />
-            <div className="leading-tight">
-              <div className="font-serif text-[15px] text-[var(--pp-burgundy)] tracking-tight">Passport</div>
-              <div className="font-mono text-[8px] tracking-[0.4em] text-[var(--pp-ink-soft)] uppercase -mt-0.5">Northwest Arkansas</div>
+            <img src="/logo.png" alt="Passport NWA" className="size-9 rounded-full shrink-0" />
+            <div className="leading-tight min-w-0">
+              <div className="font-serif text-[17px] text-[var(--pp-burgundy)] tracking-tight">Passport</div>
+              <div className="font-mono text-[9px] tracking-[0.35em] text-[var(--pp-ink-soft)] uppercase -mt-0.5 truncate">NORTHWEST AR</div>
             </div>
           </Link>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5">
             {profile?.is_admin && (
               <Link
                 href="/admin"
-                className="font-mono text-[9px] tracking-[0.2em] uppercase px-2 py-1 rounded border border-[var(--pp-burgundy)] text-[var(--pp-burgundy)]"
+                className="font-mono text-[10px] tracking-[0.18em] uppercase px-2.5 py-1.5 rounded border border-[var(--pp-burgundy)] text-[var(--pp-burgundy)]"
               >
                 Admin
               </Link>
             )}
             <NotificationsBell />
-            <span className="font-mono text-xs text-[var(--pp-burgundy)]">
+            <span className="font-mono text-sm text-[var(--pp-burgundy)] tabular-nums">
               <span className="text-[var(--pp-gold)]">★</span> {profile?.points ?? 0}
             </span>
-            <Link href={profileHref} className="font-mono text-xs text-[var(--pp-ink-soft)] hover:text-[var(--pp-burgundy)]">
+            <Link href={profileHref} className="hidden xs:inline font-mono text-xs text-[var(--pp-ink-soft)] hover:text-[var(--pp-burgundy)]">
               @{profile?.username ?? "me"}
             </Link>
           </div>
@@ -123,12 +123,12 @@ function NavItem({
   return (
     <Link
       href={href}
-      className={`py-2.5 flex flex-col items-center gap-0.5 ${
+      className={`py-3 flex flex-col items-center gap-1 ${
         gold ? "text-[var(--pp-gold)]" : "text-[var(--pp-ink-soft)] hover:text-[var(--pp-burgundy)]"
       }`}
     >
-      <span className={`text-base leading-none ${gold ? "" : "text-[var(--pp-burgundy)]"}`}>{icon}</span>
-      <span className="font-mono text-[9px] tracking-[0.25em] uppercase">{label}</span>
+      <span className={`text-xl leading-none ${gold ? "" : "text-[var(--pp-burgundy)]"}`}>{icon}</span>
+      <span className="font-mono text-[10px] tracking-[0.2em] uppercase">{label}</span>
     </Link>
   );
 }
