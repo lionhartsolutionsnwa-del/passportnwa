@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { addCompanionAction, removeCompanionAction } from "./actions";
+import SharePassportButton from "./share-passport-button";
 
 function tier(spotsVisited: number) {
   if (spotsVisited >= 100) return { name: "NWA Legend", code: "L-3" };
@@ -189,6 +190,12 @@ export default async function ProfilePage({
         <Seal label="Spots"      value={uniqueRestaurants} />
         <Seal label="Companions" value={companions.length} />
       </div>
+
+      {isMe && (
+        <div className="mx-6 mt-6">
+          <SharePassportButton username={profile.username} />
+        </div>
+      )}
 
       {favorites.length > 0 && (
         <Section title="Top Destinations">
