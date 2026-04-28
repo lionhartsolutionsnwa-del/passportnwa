@@ -29,7 +29,7 @@ export default async function AdminUsersList({
       <form className="flex gap-2">
         <input name="q" defaultValue={q ?? ""} placeholder="Search username or name…" className="input flex-1" />
         {filter && <input type="hidden" name="filter" value={filter} />}
-        <button className="btn-primary py-2 px-4 text-[11px]">Go</button>
+        <button className="btn-primary btn-sm">Go</button>
       </form>
 
       <div className="flex gap-1">

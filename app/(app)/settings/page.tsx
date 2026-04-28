@@ -151,7 +151,7 @@ export default async function SettingsPage() {
           />
         )}
 
-        <button className="btn-primary py-4 mt-2 text-sm">Save passport</button>
+        <button className="btn-primary mt-2">Save passport</button>
       </form>
     </div>
   );

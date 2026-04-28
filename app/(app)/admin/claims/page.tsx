@@ -97,10 +97,10 @@ export default async function ClaimsPage() {
                 </div>
                 <div className="flex flex-col gap-2 shrink-0">
                   <form action={decideClaimAction.bind(null, c.id, "approved")}>
-                    <button className="btn-primary py-1.5 px-3 text-[10px]">Approve</button>
+                    <button className="btn-primary btn-sm">Approve</button>
                   </form>
                   <form action={decideClaimAction.bind(null, c.id, "rejected")}>
-                    <button className="btn-ghost py-1.5 px-3 text-[10px]">Reject</button>
+                    <button className="btn-ghost btn-sm">Reject</button>
                   </form>
                 </div>
               </div>

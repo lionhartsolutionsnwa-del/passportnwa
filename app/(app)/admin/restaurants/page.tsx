@@ -25,13 +25,13 @@ export default async function AdminRestaurantsList({
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
         <h1 className="headline text-3xl">All restaurants</h1>
-        <Link href="/admin/restaurants/new" className="btn-primary py-2 px-3 text-[11px]">Add new</Link>
+        <Link href="/admin/restaurants/new" className="btn-primary btn-sm">Add new</Link>
       </div>
 
       <form className="flex gap-2">
         <input name="q" defaultValue={q ?? ""} placeholder="Search name…" className="input flex-1" />
         {filter && <input type="hidden" name="filter" value={filter} />}
-        <button className="btn-primary py-2 px-4 text-[11px]">Go</button>
+        <button className="btn-primary btn-sm">Go</button>
       </form>
 
       <div className="flex gap-1">

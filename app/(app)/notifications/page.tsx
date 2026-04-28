@@ -27,7 +27,7 @@ export default async function NotificationsPage() {
         </div>
         {unread.length > 0 && (
           <form action={markAllReadAction}>
-            <button className="btn-ghost py-1.5 px-3 text-[10px]">Mark all read</button>
+            <button className="btn-ghost btn-sm">Mark all read</button>
           </form>
         )}
       </header>

@@ -49,7 +49,7 @@ export default async function AdminUserPage({
             </div>
             {user.bio && <p className="font-serif italic text-sm text-[var(--pp-ink-soft)] mt-1">{user.bio}</p>}
           </div>
-          <Link href={`/u/${user.username}`} className="btn-ghost py-1.5 px-3 text-[10px]">
+          <Link href={`/u/${user.username}`} className="btn-ghost btn-sm">
             View public
           </Link>
         </div>
@@ -95,12 +95,12 @@ export default async function AdminUserPage({
 
         <div className="grid grid-cols-2 gap-2 mt-2">
           <form action={toggleAdminAction.bind(null, user.id, !user.is_admin)}>
-            <button className="btn-ghost w-full py-2 px-3 text-[10px]">
+            <button className="btn-ghost btn-sm w-full">
               {user.is_admin ? "Revoke admin" : "Grant admin"}
             </button>
           </form>
           <form action={sendPasswordResetAction.bind(null, user.id)}>
-            <button className="btn-ghost w-full py-2 px-3 text-[10px]">
+            <button className="btn-ghost btn-sm w-full">
               Email password reset
             </button>
           </form>
@@ -110,7 +110,7 @@ export default async function AdminUserPage({
           {!user.is_suspended && (
             <input name="reason" placeholder="Reason (visible to admins)" className="input flex-1 text-sm" />
           )}
-          <button className={`${user.is_suspended ? "btn-ghost" : "btn-primary"} py-2 px-3 text-[10px]`}>
+          <button className={`${user.is_suspended ? "btn-ghost" : "btn-primary"} btn-sm`}>
             {user.is_suspended ? "Unsuspend" : "Suspend"}
           </button>
         </form>

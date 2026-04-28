@@ -74,7 +74,7 @@ export default async function NewReceiptPage({
           </p>
         </div>
 
-        <button className="btn-primary py-4 mt-2 text-sm">Submit for review</button>
+        <button className="btn-primary mt-2">Submit for review</button>
       </form>
     </div>
   );

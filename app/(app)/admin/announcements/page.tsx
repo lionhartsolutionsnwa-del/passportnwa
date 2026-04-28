@@ -31,7 +31,7 @@ export default async function AdminAnnouncementsPage() {
           <input name="link_label" placeholder="Link label (optional)" className="input text-sm" />
         </div>
         <input name="ends_at" type="datetime-local" className="input text-sm" />
-        <button className="btn-primary py-2.5 px-4 text-[11px] self-start">Post announcement</button>
+        <button className="btn-primary btn-sm self-start">Post announcement</button>
       </form>
 
       <ul className="flex flex-col gap-2">

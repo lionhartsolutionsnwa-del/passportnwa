@@ -45,7 +45,7 @@ export default function SearchBox() {
           className="flex-1 py-3 pr-3 bg-transparent outline-none font-mono"
         />
       </div>
-      <button disabled={status === "loading" || !q.trim()} className="btn-primary py-2.5 px-4 text-[11px] self-start disabled:opacity-50">
+      <button disabled={status === "loading" || !q.trim()} className="btn-primary btn-sm self-start">
         {status === "loading" ? "Searching…" : "Find"}
       </button>
       {status === "notfound" && (

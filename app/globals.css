@@ -227,21 +227,33 @@ body::before {
 .postcard {
   background: var(--pp-paper-soft);
   border: 1px solid var(--pp-cream-dark);
-  border-radius: 4px;
+  border-radius: 8px;
   box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.6) inset,
-    0 1px 2px rgba(91, 31, 41, 0.08),
-    0 4px 12px rgba(91, 31, 41, 0.04);
+    0 1px 0 rgba(255, 255, 255, 0.7) inset,
+    0 1px 2px rgba(91, 31, 41, 0.06),
+    0 4px 12px rgba(91, 31, 41, 0.03);
   overflow: hidden;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    border-color 0.18s ease;
 }
 
 .postcard:hover {
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  border-color: rgba(91, 31, 41, 0.22);
   box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.6) inset,
-    0 2px 4px rgba(91, 31, 41, 0.1),
-    0 8px 18px rgba(91, 31, 41, 0.08);
+    0 1px 0 rgba(255, 255, 255, 0.7) inset,
+    0 2px 6px rgba(91, 31, 41, 0.08),
+    0 14px 28px -8px rgba(91, 31, 41, 0.12);
+}
+
+a.postcard:focus-visible,
+button.postcard:focus-visible {
+  outline: none;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.7) inset,
+    0 0 0 3px rgba(201, 161, 74, 0.5);
 }
 
 /* Hand-corner ticket / postage style */
@@ -262,14 +274,15 @@ body::before {
 .ticket-corner::before { left: -7px; top: 50%; transform: translateY(-50%); }
 .ticket-corner::after  { right: -7px; top: 50%; transform: translateY(-50%); }
 
-/* Pill button — 44px+ tap target, readable label */
-.btn-primary {
-  background: var(--pp-burgundy);
-  color: var(--pp-cream);
+/* ==================== BUTTONS — three sizes, one system ==================== */
+.btn-primary,
+.btn-secondary,
+.btn-ghost {
   font-family: var(--font-mono), monospace;
-  font-size: 13px;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
+  font-weight: 500;
+  font-size: 13px;
   padding: 14px 22px;
   min-height: 48px;
   border-radius: 999px;
@@ -277,30 +290,67 @@ body::before {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  transition: background 0.15s ease, transform 0.1s ease;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.08s ease,
+    box-shadow 0.15s ease;
 }
 
-.btn-primary:hover  { background: var(--pp-burgundy-deep); }
-.btn-primary:active { transform: scale(0.98); }
+.btn-primary:focus-visible,
+.btn-secondary:focus-visible,
+.btn-ghost:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(201, 161, 74, 0.55);
+}
+
+.btn-primary:active,
+.btn-secondary:active,
+.btn-ghost:active { transform: scale(0.98); }
+
+.btn-primary:disabled,
+.btn-secondary:disabled,
+.btn-ghost:disabled { opacity: 0.45; cursor: not-allowed; transform: none !important; }
+
+/* Variants */
+.btn-primary {
+  background: var(--pp-burgundy);
+  color: var(--pp-cream);
+}
+.btn-primary:hover:not(:disabled) { background: var(--pp-burgundy-deep); }
+
+.btn-secondary {
+  background: var(--pp-gold);
+  color: var(--pp-ink);
+  font-weight: 600;
+}
+.btn-secondary:hover:not(:disabled) { background: var(--pp-gold-soft); }
 
 .btn-ghost {
   background: transparent;
   color: var(--pp-burgundy);
   border: 1px solid var(--pp-burgundy);
-  font-family: var(--font-mono), monospace;
-  font-size: 13px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
   padding: 13px 21px;
-  min-height: 48px;
-  border-radius: 999px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
+}
+.btn-ghost:hover:not(:disabled) { background: var(--pp-cream); }
+
+/* Size modifiers — combine with variant: <button class="btn-primary btn-sm"> */
+.btn-sm {
+  font-size: 11px !important;
+  padding: 9px 14px !important;
+  min-height: 36px !important;
+  letter-spacing: 0.16em !important;
 }
 
-.btn-ghost:hover { background: rgba(91, 31, 41, 0.06); }
+.btn-tiny {
+  font-size: 10px !important;
+  padding: 6px 10px !important;
+  min-height: 28px !important;
+  letter-spacing: 0.16em !important;
+}
 
 /* Form inputs — 16px text size prevents iOS auto-zoom */
 .input {
@@ -317,9 +367,21 @@ body::before {
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-.input:focus {
+.input:focus,
+.input:focus-visible {
+  outline: none;
   border-color: var(--pp-burgundy);
-  box-shadow: 0 0 0 3px rgba(91, 31, 41, 0.08);
+  box-shadow: 0 0 0 3px rgba(201, 161, 74, 0.4);
+}
+
+/* Stat numbers should never wiggle as values change */
+.tabnums { font-variant-numeric: tabular-nums; }
+
+/* Anchor focus — inherits unless overridden */
+a:focus-visible {
+  outline: 2px solid rgba(201, 161, 74, 0.6);
+  outline-offset: 2px;
+  border-radius: 2px;
 }
 
 /* Reading-friendly body text class for prose blocks */

@@ -115,7 +115,7 @@ export default async function FeedPage({
           <TabLink active={tab === "all"} href="/">All travelers</TabLink>
           <TabLink active={tab === "companions"} href="/?view=companions">Companions</TabLink>
         </div>
-        <Link href="/companions" className="btn-ghost text-[10px]">
+        <Link href="/companions" className="btn-ghost btn-sm">
           Find companions
         </Link>
       </div>

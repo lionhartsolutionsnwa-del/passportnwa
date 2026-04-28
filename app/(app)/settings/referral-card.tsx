@@ -59,10 +59,10 @@ export default function ReferralCard({
       </div>
 
       <div className="flex gap-2">
-        <button type="button" onClick={copy} className="btn-ghost flex-1 py-2.5 px-4 text-[11px]">
+        <button type="button" onClick={copy} className="btn-ghost btn-sm flex-1">
           {copied ? "Copied ✓" : "Copy link"}
         </button>
-        <button type="button" onClick={share} className="btn-primary flex-1 py-2.5 px-4 text-[11px]">
+        <button type="button" onClick={share} className="btn-primary btn-sm flex-1">
           Share
         </button>
       </div>

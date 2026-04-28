@@ -225,7 +225,7 @@ export default function StampLands({
 
           <Link
             href={`/post/new?r=${restaurant.slug}&checkedIn=1`}
-            className="btn-primary w-full py-3.5 text-[11px] bg-[var(--pp-gold)] text-[var(--pp-ink)]"
+            className="btn-secondary w-full"
           >
             Leave a field note →
           </Link>

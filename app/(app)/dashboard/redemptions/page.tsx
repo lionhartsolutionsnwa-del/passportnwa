@@ -43,7 +43,7 @@ export default async function RedemptionsQueuePage() {
             placeholder="ABC123"
             className="input font-mono uppercase tracking-[0.2em] text-center"
           />
-          <button className="btn-primary px-5 text-[11px]">Fulfill</button>
+          <button className="btn-primary btn-sm">Fulfill</button>
         </form>
       </section>
 
@@ -64,10 +64,10 @@ export default async function RedemptionsQueuePage() {
               <div className="flex items-center gap-2 shrink-0">
                 <span className="postage">{r.code}</span>
                 <form action={setStatusAction.bind(null, r.id, "fulfilled")}>
-                  <button className="btn-primary py-1.5 px-3 text-[10px]">Fulfill</button>
+                  <button className="btn-primary btn-sm">Fulfill</button>
                 </form>
                 <form action={setStatusAction.bind(null, r.id, "cancelled")}>
-                  <button className="btn-ghost py-1.5 px-3 text-[10px]">Cancel</button>
+                  <button className="btn-ghost btn-sm">Cancel</button>
                 </form>
               </div>
             </li>

@@ -64,7 +64,7 @@ export default async function NewPostPage({
           />
         </div>
 
-        <button className="btn-primary py-4 mt-2 text-sm">Publish entry</button>
+        <button className="btn-primary mt-2">Publish entry</button>
       </form>
     </div>
   );

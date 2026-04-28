@@ -46,12 +46,12 @@ export default async function EditRestaurantPage({
           </div>
           <div className="flex flex-col gap-2">
             <form action={toggleActiveAction.bind(null, restaurant.id, !restaurant.is_active)}>
-              <button className="btn-ghost py-1.5 px-3 text-[10px]">
+              <button className="btn-ghost btn-sm">
                 {restaurant.is_active ? "Deactivate" : "Activate"}
               </button>
             </form>
             <form action={toggleFeaturedAction.bind(null, restaurant.id, !restaurant.is_featured)}>
-              <button className="btn-ghost py-1.5 px-3 text-[10px]">
+              <button className="btn-ghost btn-sm">
                 {restaurant.is_featured ? "Unfeature" : "Feature ★"}
               </button>
             </form>
@@ -77,7 +77,7 @@ export default async function EditRestaurantPage({
             className="input mt-2 resize-none"
           />
         </div>
-        <button className="btn-primary py-3 text-[11px] self-start">Save changes</button>
+        <button className="btn-primary btn-sm self-start">Save changes</button>
       </form>
 
       {/* Refresh from Google */}
@@ -87,7 +87,7 @@ export default async function EditRestaurantPage({
           <p className="font-serif italic text-sm text-[var(--pp-ink-soft)] mt-1">
             Pull fresh rating, hours, and photos from Google.
           </p>
-          <button className="btn-ghost mt-3 py-2 px-3 text-[11px]">Refresh data</button>
+          <button className="btn-ghost btn-sm mt-3">Refresh data</button>
         </form>
       )}
 
@@ -113,7 +113,7 @@ export default async function EditRestaurantPage({
 
         <form action={addOwnerAction.bind(null, restaurant.id)} className="mt-3 flex gap-2">
           <input name="username" required pattern="[a-zA-Z0-9_]{3,30}" placeholder="Add owner by @username" className="input flex-1" />
-          <button className="btn-primary py-2 px-4 text-[11px]">Add</button>
+          <button className="btn-primary btn-sm">Add</button>
         </form>
       </section>
     </div>

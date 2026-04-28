@@ -95,10 +95,10 @@ export default async function ReceiptsQueuePage() {
               />
               <span className="pr-3 font-mono text-[10px] text-[var(--pp-ink-soft)]">PTS</span>
             </div>
-            <button name="decision" value="approved" className="btn-primary py-2 px-4 text-[11px]">
+            <button name="decision" value="approved" className="btn-primary btn-sm">
               Approve
             </button>
-            <button name="decision" value="rejected" className="btn-ghost py-2 px-4 text-[11px]">
+            <button name="decision" value="rejected" className="btn-ghost btn-sm">
               Reject
             </button>
           </form>

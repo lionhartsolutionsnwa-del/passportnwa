@@ -238,7 +238,7 @@ export default function LoginPage() {
 
           <button
             disabled={status === "loading"}
-            className="btn-primary py-4 text-sm mt-2"
+            className="btn-primary mt-2"
           >
             {status === "loading"
               ? "..."

@@ -204,7 +204,7 @@ export default function RestaurantSignupPage() {
 
           <button
             disabled={submitting || (mode === "existing" && !pickedRestaurant)}
-            className="btn-primary py-4 text-sm"
+            className="btn-primary"
           >
             {submitting ? "Submitting…" : "Submit application"}
           </button>

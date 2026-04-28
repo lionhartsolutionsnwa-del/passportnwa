@@ -84,7 +84,7 @@ export default async function RewardsManagePage() {
                 <span className="px-3 font-mono text-[var(--pp-ink-soft)]">★</span>
                 <input name="points_cost" type="number" min="1" max="10000" required placeholder="Points cost" className="flex-1 py-3 pr-3 bg-transparent outline-none font-mono" />
               </div>
-              <button className="btn-primary py-2.5 px-4 text-[11px] self-start">Add reward</button>
+              <button className="btn-primary btn-sm self-start">Add reward</button>
             </form>
           </section>
         );
