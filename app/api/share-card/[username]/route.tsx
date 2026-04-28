@@ -1,4 +1,5 @@
 import { ImageResponse } from "next/og";
+import QRCode from "qrcode";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export const runtime = "nodejs";
@@ -70,6 +71,15 @@ export async function GET(
   const origin = req.headers.get("origin") ?? new URL(req.url).origin;
   const logoUrl = `${origin}/logo.png`;
   const tierLabel = tier(uniqueSpots);
+
+  // Build the referral URL + QR code (rendered as a data URL we embed in <img />)
+  const referralUrl = `https://www.passportnwa.com/login?ref=${encodeURIComponent(profile.username)}`;
+  const qrDataUrl = await QRCode.toDataURL(referralUrl, {
+    errorCorrectionLevel: "H",
+    margin: 1,
+    width: 480,
+    color: { dark: "#5b1f29", light: "#f1e4c8" },
+  });
 
   return new ImageResponse(
     (
@@ -253,16 +263,16 @@ export async function GET(
         {/* Spacer pushes the bottom CTA down */}
         <div style={{ flex: 1, display: "flex" }} />
 
-        {/* Referral CTA */}
+        {/* Referral CTA — QR code */}
         <div
           style={{
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            background: "rgba(0,0,0,0.25)",
-            border: "1px solid rgba(201,161,74,0.3)",
+            background: "rgba(0,0,0,0.28)",
+            border: "1px solid rgba(201,161,74,0.35)",
             borderRadius: 24,
-            padding: "40px 50px",
+            padding: "44px 50px 42px",
             marginTop: 60,
             width: "100%",
             maxWidth: 880,
@@ -278,18 +288,34 @@ export async function GET(
               display: "flex",
             }}
           >
-            Join me · earn 25 points
+            Scan to join · 25 pts each
           </div>
+
+          {/* QR code on cream background, like a passport stamp */}
           <div
             style={{
-              fontFamily: "MonoBold",
-              fontSize: 38,
+              marginTop: 28,
+              padding: 20,
+              background: "#f1e4c8",
+              borderRadius: 16,
+              display: "flex",
+              boxShadow: "0 12px 30px -8px rgba(0,0,0,0.5)",
+            }}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={qrDataUrl} alt="" width={340} height={340} />
+          </div>
+
+          <div
+            style={{
+              marginTop: 22,
+              fontFamily: "GaramondBold",
+              fontSize: 30,
               color: "#f1e4c8",
-              marginTop: 18,
               display: "flex",
             }}
           >
-            passportnwa.com/login?ref={profile.username}
+            @{profile.username}
           </div>
         </div>
       </div>

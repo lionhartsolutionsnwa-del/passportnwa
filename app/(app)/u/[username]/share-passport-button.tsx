@@ -23,7 +23,7 @@ export default function SharePassportButton({ username }: { username: string }) 
       if (nav.canShare?.({ files: [file] }) && nav.share) {
         await nav.share({
           title: "My Passport NWA",
-          text: `Join me on Passport NWA — earn 25 points when you sign up with my code: passportnwa.com/login?ref=${username}`,
+          text: `Scan my Passport NWA card — we both earn 25 points when you join.`,
           files: [file],
         });
         return;
