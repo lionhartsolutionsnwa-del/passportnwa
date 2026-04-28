@@ -1,7 +1,53 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import RateWidget from "./rate-widget";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const admin = createAdminClient();
+  const { data: r } = await admin
+    .from("restaurants")
+    .select("name, city, cuisine, description, rating, user_rating_count, cover_image_url")
+    .eq("slug", slug)
+    .eq("is_active", true)
+    .maybeSingle();
+
+  if (!r) return { title: "Not found" };
+
+  const title = `${r.name} — ${r.city} | Passport NWA`;
+  const ratingPart = r.rating ? `${Number(r.rating).toFixed(1)}★ · ` : "";
+  const cuisinePart = r.cuisine ? `${r.cuisine} · ` : "";
+  const description =
+    r.description ??
+    `${ratingPart}${cuisinePart}Stamp your passport at ${r.name} in ${r.city}, Northwest Arkansas. Earn points, leave field notes, and discover NWA's best independent restaurants on Passport NWA.`;
+
+  return {
+    title,
+    description,
+    alternates: { canonical: `https://www.passportnwa.com/r/${slug}` },
+    openGraph: {
+      type: "website",
+      title,
+      description,
+      url: `https://www.passportnwa.com/r/${slug}`,
+      siteName: "Passport NWA",
+      images: r.cover_image_url ? [{ url: r.cover_image_url, width: 1200, height: 630, alt: r.name }] : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: r.cover_image_url ? [r.cover_image_url] : undefined,
+    },
+  };
+}
 
 export default async function RestaurantPage({
   params,

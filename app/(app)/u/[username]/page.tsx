@@ -1,8 +1,48 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { addCompanionAction, removeCompanionAction } from "./actions";
 import SharePassportButton from "./share-passport-button";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ username: string }>;
+}): Promise<Metadata> {
+  const { username } = await params;
+  const admin = createAdminClient();
+  const { data: p } = await admin
+    .from("profiles")
+    .select("username, display_name, bio, points")
+    .eq("username", username)
+    .maybeSingle();
+
+  if (!p) return { title: "Traveler not found" };
+
+  const title = `${p.display_name ?? p.username} (@${p.username}) — Passport NWA`;
+  const description =
+    p.bio ??
+    `${p.display_name ?? p.username} on Passport NWA — collecting stamps and field notes from the best independent restaurants in Northwest Arkansas.`;
+
+  const ogImage = `https://www.passportnwa.com/api/share-card/${encodeURIComponent(p.username)}`;
+
+  return {
+    title,
+    description,
+    alternates: { canonical: `https://www.passportnwa.com/u/${p.username}` },
+    openGraph: {
+      type: "profile",
+      title,
+      description,
+      url: `https://www.passportnwa.com/u/${p.username}`,
+      siteName: "Passport NWA",
+      images: [{ url: ogImage, width: 1080, height: 1920, alt: `Passport of ${p.display_name ?? p.username}` }],
+    },
+    twitter: { card: "summary_large_image", title, description, images: [ogImage] },
+  };
+}
 
 function tier(spotsVisited: number) {
   if (spotsVisited >= 100) return { name: "NWA Legend", code: "L-3" };

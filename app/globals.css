@@ -353,6 +353,11 @@ body::before {
 .scrollbar-none::-webkit-scrollbar { display: none; }
 .scrollbar-none { scrollbar-width: none; }
 
+@keyframes skeleton-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
 /* Postage stamp badge for ratings on cards */
 .postage {
   display: inline-flex;

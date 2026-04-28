@@ -26,10 +26,32 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Passport NWA — Loyalty for Northwest Arkansas's Best Independent Restaurants",
+  metadataBase: new URL("https://www.passportnwa.com"),
+  title: {
+    default: "Passport NWA — Loyalty for Northwest Arkansas's Best Independent Restaurants",
+    template: "%s",
+  },
   description:
-    "One app. Every great independent restaurant in NWA. Earn rewards across the network.",
+    "Stamp your passport at every great independent restaurant in Northwest Arkansas. Earn points, leave field notes, and discover the best spots in Bentonville, Rogers, Fayetteville, and Springdale.",
   manifest: "/manifest.json",
+  keywords: [
+    "Northwest Arkansas restaurants",
+    "Bentonville dining",
+    "Fayetteville restaurants",
+    "Rogers restaurants",
+    "NWA loyalty",
+    "Passport NWA",
+    "best restaurants NWA",
+    "Arkansas dining guide",
+  ],
+  authors: [{ name: "Passport NWA" }],
+  openGraph: {
+    type: "website",
+    siteName: "Passport NWA",
+    locale: "en_US",
+  },
+  twitter: { card: "summary_large_image" },
+  robots: { index: true, follow: true },
 };
 
 export const viewport: Viewport = {
