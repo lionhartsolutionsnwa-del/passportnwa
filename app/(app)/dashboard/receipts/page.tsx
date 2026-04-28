@@ -45,15 +45,9 @@ export default async function ReceiptsQueuePage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <header>
-        <Link href="/dashboard" className="font-mono text-[10px] tracking-[0.2em] uppercase text-[var(--pp-ink-soft)] hover:text-[var(--pp-burgundy)]">
-          ← Concierge
-        </Link>
-        <h1 className="headline text-3xl mt-2">Receipts to review</h1>
-        <p className="font-serif italic text-[var(--pp-ink-soft)] mt-1 text-sm">
-          {pending.length} pending · {decided.length} reviewed
-        </p>
-      </header>
+      <p className="font-serif italic text-[var(--pp-ink-soft)] text-sm -mt-2">
+        {pending.length} pending · {decided.length} reviewed
+      </p>
 
       {pending.length === 0 && (
         <div className="postcard p-6 text-center">

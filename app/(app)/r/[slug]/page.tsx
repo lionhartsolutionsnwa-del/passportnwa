@@ -180,27 +180,36 @@ export default async function RestaurantPage({
         />
       )}
 
-      {/* Practical info — postcards */}
-      <section className="grid grid-cols-2 gap-2">
-        {restaurant.phone && (
-          <a href={`tel:${restaurant.phone}`} className="postcard p-4">
-            <div className="eyebrow">Telephone</div>
-            <div className="font-mono text-base mt-1.5 truncate">{restaurant.phone}</div>
-          </a>
-        )}
-        {restaurant.website && (
-          <a href={restaurant.website} target="_blank" rel="noreferrer" className="postcard p-4">
-            <div className="eyebrow">Online</div>
-            <div className="font-mono text-base mt-1.5 text-[var(--pp-burgundy)] truncate">Visit →</div>
-          </a>
-        )}
-        {mapHref && (
-          <a href={mapHref} target="_blank" rel="noreferrer" className="postcard p-4 col-span-2">
-            <div className="eyebrow">Location</div>
-            <div className="font-serif text-base mt-1.5">{restaurant.address}</div>
-          </a>
-        )}
-      </section>
+      {/* Practical info — compact icon strip */}
+      {(restaurant.phone || restaurant.website || mapHref) && (
+        <>
+          <section className="postcard grid grid-cols-3 divide-x divide-[var(--pp-cream-dark)] overflow-hidden">
+            {restaurant.phone ? (
+              <a href={`tel:${restaurant.phone}`} className="flex flex-col items-center gap-1.5 py-4 hover:bg-[var(--pp-cream)] min-h-[72px] justify-center">
+                <span className="text-2xl text-[var(--pp-burgundy)] leading-none">☎</span>
+                <span className="font-mono text-[10px] tracking-[0.22em] uppercase text-[var(--pp-ink-soft)]">Call</span>
+              </a>
+            ) : <div />}
+            {restaurant.website ? (
+              <a href={restaurant.website} target="_blank" rel="noreferrer" className="flex flex-col items-center gap-1.5 py-4 hover:bg-[var(--pp-cream)] min-h-[72px] justify-center">
+                <span className="text-2xl text-[var(--pp-burgundy)] leading-none">⊕</span>
+                <span className="font-mono text-[10px] tracking-[0.22em] uppercase text-[var(--pp-ink-soft)]">Website</span>
+              </a>
+            ) : <div />}
+            {mapHref ? (
+              <a href={mapHref} target="_blank" rel="noreferrer" className="flex flex-col items-center gap-1.5 py-4 hover:bg-[var(--pp-cream)] min-h-[72px] justify-center">
+                <span className="text-2xl text-[var(--pp-burgundy)] leading-none">⌖</span>
+                <span className="font-mono text-[10px] tracking-[0.22em] uppercase text-[var(--pp-ink-soft)]">Directions</span>
+              </a>
+            ) : <div />}
+          </section>
+          {restaurant.address && (
+            <p className="font-serif italic text-sm text-[var(--pp-ink-soft)] text-center -mt-2 px-4">
+              {restaurant.address}
+            </p>
+          )}
+        </>
+      )}
 
       {/* Hours */}
       {restaurant.hours_text && restaurant.hours_text.length > 0 && (

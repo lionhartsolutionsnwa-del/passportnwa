@@ -30,13 +30,6 @@ export default async function RedemptionsQueuePage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <header>
-        <Link href="/dashboard" className="font-mono text-[10px] tracking-[0.2em] uppercase text-[var(--pp-ink-soft)]">
-          ← Concierge
-        </Link>
-        <h1 className="headline text-3xl mt-2">Redemptions</h1>
-      </header>
-
       <section className="postcard p-4">
         <div className="eyebrow">Fulfill by code</div>
         <p className="font-serif italic text-[var(--pp-ink-soft)] text-sm mt-1">

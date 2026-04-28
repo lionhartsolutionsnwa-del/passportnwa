@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { addCompanionAction, removeCompanionAction } from "./actions";
 import SharePassportButton from "./share-passport-button";
+import ProfileTabs from "./profile-tabs";
 
 export async function generateMetadata({
   params,
@@ -258,12 +259,8 @@ export default async function ProfilePage({
         </Section>
       )}
 
-      <Section title={`Companions · ${companions.length}`}>
-        {companions.length === 0 ? (
-          <p className="font-serif italic text-[var(--pp-ink)]/50 mt-3 text-sm">
-            No companions yet. Companions form when two travelers add each other.
-          </p>
-        ) : (
+      {companions.length > 0 && (
+        <Section title={`Companions · ${companions.length}`}>
           <div className="flex gap-4 overflow-x-auto -mx-6 px-6 mt-4 scrollbar-none">
             {companions.map((f) => (
               <Link key={f.username} href={`/u/${f.username}`} className="flex flex-col items-center gap-2 shrink-0 w-20">
@@ -279,48 +276,10 @@ export default async function ProfilePage({
               </Link>
             ))}
           </div>
-        )}
-      </Section>
+        </Section>
+      )}
 
-      <Section title="Visa Stamps">
-        {!stamps?.length ? (
-          <p className="font-serif italic text-[var(--pp-ink)]/50 mt-3 text-sm">
-            No stamps yet. <Link href="/restaurants" className="underline text-[var(--pp-burgundy)]">Begin your travels →</Link>
-          </p>
-        ) : (
-          <div className="mt-4 flex flex-wrap gap-3 justify-start">
-            {stamps.map((s: any) => (
-              <Link key={s.id} href={`/r/${s.restaurants?.slug}`} className="stamp" style={{ transform: `rotate(${tilt(s.id)}deg)` }} title={`${s.restaurants?.name} · ${new Date(s.created_at).toLocaleDateString()}`}>
-                <span className="stamp-name">{s.restaurants?.name}</span>
-                <span className="stamp-date">
-                  {new Date(s.created_at).toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "2-digit" })}
-                </span>
-              </Link>
-            ))}
-          </div>
-        )}
-      </Section>
-
-      <Section title="Field Notes">
-        {!posts?.length ? (
-          <p className="font-serif italic text-[var(--pp-ink)]/50 mt-3 text-sm">No entries yet.</p>
-        ) : (
-          <div className="grid grid-cols-3 gap-1 mt-3">
-            {posts.map((p: any) => (
-              <Link key={p.id} href={`/r/${p.restaurants?.slug ?? ""}`} className="aspect-square overflow-hidden border border-[var(--pp-burgundy)]/15 bg-[var(--pp-cream-dark)]">
-                {p.photo_url ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={p.photo_url} alt="" className="size-full object-cover" />
-                ) : (
-                  <div className="size-full flex items-center justify-center text-[10px] font-serif italic text-[var(--pp-ink)]/60 p-2 text-center">
-                    {p.caption?.slice(0, 60) ?? "—"}
-                  </div>
-                )}
-              </Link>
-            ))}
-          </div>
-        )}
-      </Section>
+      <ProfileTabs stamps={(stamps ?? []) as any} posts={(posts ?? []) as any} />
     </div>
   );
 }

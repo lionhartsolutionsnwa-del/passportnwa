@@ -48,7 +48,6 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     { href: "/", label: "Journal", icon: "◴" },
     { href: "/restaurants", label: "Atlas", icon: "✦" },
     { href: profileHref, label: "Passport", icon: "✺" },
-    { href: "/companions", label: "Companions", icon: "❍" },
     ...(showDashboard ? [{ href: "/dashboard", label: "Concierge", icon: "❖", gold: true }] : []),
     ...(profile?.is_admin ? [{ href: "/admin", label: "Admin", icon: "✦" }] : []),
   ];

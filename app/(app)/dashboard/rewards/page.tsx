@@ -32,15 +32,9 @@ export default async function RewardsManagePage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <header>
-        <Link href="/dashboard" className="font-mono text-[10px] tracking-[0.2em] uppercase text-[var(--pp-ink-soft)]">
-          ← Concierge
-        </Link>
-        <h1 className="headline text-3xl mt-2">Rewards</h1>
-        <p className="font-serif italic text-[var(--pp-ink-soft)] mt-1 text-sm">
-          Define what travelers can spend their points on at your destination.
-        </p>
-      </header>
+      <p className="font-serif italic text-[var(--pp-ink-soft)] text-sm -mt-2">
+        Define what travelers can spend their points on at your destination.
+      </p>
 
       {(owned as any[]).map((o) => {
         const r = o.restaurants;

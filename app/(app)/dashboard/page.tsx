@@ -30,47 +30,34 @@ export default async function DashboardPage() {
   if (!hasApprovedOwnership) {
     if (pendingClaims && pendingClaims.length > 0) {
       return (
-        <div className="flex flex-col gap-6">
-          <header>
-            <div className="eyebrow">Concierge</div>
-            <h1 className="headline text-3xl mt-2">Under review</h1>
-          </header>
-
-          <div className="postcard p-6 text-center">
-            <div className="eyebrow text-[var(--pp-burgundy)]">Verification pending</div>
-            <p className="font-serif italic text-[var(--pp-ink-soft)] mt-3">
-              We're verifying your business. This usually takes <strong>1–2 business days</strong>. Once approved, you'll unlock QR codes, rewards, receipt review, and redemptions.
-            </p>
-            <div className="fleuron mt-4">⌑</div>
-            <ul className="flex flex-col gap-2 mt-4 text-left">
-              {pendingClaims.map((c: any) => (
-                <li key={c.id} className="border border-[var(--pp-cream-dark)] rounded p-3">
-                  <div className="font-serif">{c.restaurants?.name}</div>
-                  <div className="font-mono text-[10px] tracking-[0.15em] uppercase text-[var(--pp-ink-soft)] mt-0.5">
-                    {c.restaurants?.city} · submitted {new Date(c.created_at).toLocaleDateString()}
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </div>
+        <div className="postcard p-6 text-center">
+          <div className="eyebrow text-[var(--pp-burgundy)]">Verification pending</div>
+          <p className="font-serif italic text-[var(--pp-ink-soft)] mt-3">
+            We're verifying your business. This usually takes <strong>1–2 business days</strong>. Once approved, you'll unlock QR codes, rewards, receipt review, and redemptions.
+          </p>
+          <div className="fleuron mt-4">⌑</div>
+          <ul className="flex flex-col gap-2 mt-4 text-left">
+            {pendingClaims.map((c: any) => (
+              <li key={c.id} className="border border-[var(--pp-cream-dark)] rounded p-3">
+                <div className="font-serif">{c.restaurants?.name}</div>
+                <div className="font-mono text-[10px] tracking-[0.15em] uppercase text-[var(--pp-ink-soft)] mt-0.5">
+                  {c.restaurants?.city} · submitted {new Date(c.created_at).toLocaleDateString()}
+                </div>
+              </li>
+            ))}
+          </ul>
         </div>
       );
     }
 
     return (
-      <div className="flex flex-col gap-4">
-        <header>
-          <div className="eyebrow">Concierge</div>
-          <h1 className="headline text-3xl mt-2">Restaurant dashboard</h1>
-        </header>
-        <div className="postcard p-6 text-center">
-          <p className="font-serif italic text-[var(--pp-ink-soft)]">
-            You don't manage any destinations yet.
-          </p>
-          <Link href="/claim" className="btn-primary mt-4">
-            Claim your restaurant →
-          </Link>
-        </div>
+      <div className="postcard p-6 text-center">
+        <p className="font-serif italic text-[var(--pp-ink-soft)]">
+          You don't manage any destinations yet.
+        </p>
+        <Link href="/claim" className="btn-primary mt-4">
+          Claim your restaurant →
+        </Link>
       </div>
     );
   }
@@ -128,22 +115,9 @@ export default async function DashboardPage() {
 
   return (
     <div className="flex flex-col gap-8">
-      <header>
-        <div className="flex items-center justify-between">
-          <div>
-            <div className="eyebrow">Concierge</div>
-            <h1 className="headline text-3xl mt-2">Restaurant dashboard</h1>
-          </div>
-          <div className="flex flex-col gap-1.5">
-            <Link href="/dashboard/receipts" className="btn-ghost py-2 px-3 text-[10px]">Receipts</Link>
-            <Link href="/dashboard/rewards" className="btn-ghost py-2 px-3 text-[10px]">Rewards</Link>
-            <Link href="/dashboard/redemptions" className="btn-ghost py-2 px-3 text-[10px]">Redemptions</Link>
-          </div>
-        </div>
-        <p className="mt-2 font-serif italic text-[var(--pp-ink-soft)]">
-          Managing {owned!.map((o: any) => o.restaurants?.name).join(" · ")}
-        </p>
-      </header>
+      <p className="font-serif italic text-[var(--pp-ink-soft)] -mt-2">
+        Managing {owned!.map((o: any) => o.restaurants?.name).join(" · ")}
+      </p>
 
       <div className="grid grid-cols-3 gap-3">
         <Seal label="Stamps" value={totalCheckins ?? 0} />
